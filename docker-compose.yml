@@ -22,7 +22,7 @@ services:
 
   mongo:
     image: mongo:latest
-    container_name: loves-react-mongo
+    container_name: mongo
     ports:
       - "27017:27017" # Expose the MongoDB port
     volumes:
