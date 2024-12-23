@@ -47,12 +47,12 @@ const User = mongoose.model("User", new mongoose.Schema({
 }));
 
 // Эндпоинт для получения всех товаров
-app.get("/products", async (req, res) => {
+app.get("/api/products", async (req, res) => {
     const products = await Product.find();
     res.json(products);
 });
 
-app.post("/users", async (req, res) => {
+app.post("/api/users", async (req, res) => {
     const { telegramId, firstName, lastName, username } = req.body;
 
     try {
@@ -72,7 +72,7 @@ app.post("/users", async (req, res) => {
     }
 });
 
-app.patch('/users/:id', async (req, res) => {
+app.patch('/api/users/:id', async (req, res) => {
     const { id } = req.params;
     const updates = {
         isOnboarded,
@@ -107,13 +107,13 @@ app.patch('/users/:id', async (req, res) => {
 });
 
 // Эндпоинт для создания заказа
-app.post("/orders", async (req, res) => {
+app.post("/api/orders", async (req, res) => {
     const order = new Order(req.body);
     await order.save();
     res.json(order);
 });
 
-app.post("/payment", (req, res) => {
+app.post("/api/payment", (req, res) => {
     const { orderId, total } = req.body;
     const url = `https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=your_merchant&OutSum=${total}&InvId=${orderId}&SignatureValue=your_signature`;
     res.json({ url });
