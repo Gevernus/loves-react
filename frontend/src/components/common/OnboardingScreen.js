@@ -41,7 +41,7 @@ const OnboardingScreen = () => {
                             <input
                                 type="checkbox"
                                 checked={selectedCategories.checkCare}
-                                onChange={() => handleCheckboxChange('skincare')}
+                                onChange={() => handleCheckboxChange('checkCare')}
                             />
                             Уходовая косметика
                         </label>
@@ -49,7 +49,7 @@ const OnboardingScreen = () => {
                             <input
                                 type="checkbox"
                                 checked={selectedCategories.checkDecorate}
-                                onChange={() => handleCheckboxChange('makeup')}
+                                onChange={() => handleCheckboxChange('checkDecorate')}
                             />
                             Декоративная косметика
                         </label>
@@ -57,7 +57,7 @@ const OnboardingScreen = () => {
                             <input
                                 type="checkbox"
                                 checked={selectedCategories.checkWeight}
-                                onChange={() => handleCheckboxChange('slimming')}
+                                onChange={() => handleCheckboxChange('checkWeight')}
                             />
                             Средства для похудения
                         </label>
@@ -65,7 +65,7 @@ const OnboardingScreen = () => {
                             <input
                                 type="checkbox"
                                 checked={selectedCategories.checkAccessories}
-                                onChange={() => handleCheckboxChange('accessories')}
+                                onChange={() => handleCheckboxChange('checkAccessories')}
                             />
                             Аксессуары
                         </label>
