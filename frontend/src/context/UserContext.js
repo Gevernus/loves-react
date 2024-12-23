@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
 
                 if (tgUser) {
                     // Send user data to the backend
-                    const response = await fetch('http://localhost:8000/users', {
+                    const response = await fetch('https://touch-the-beauty-ai.shop/users', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export const UserProvider = ({ children }) => {
         };
 
         try {
-            const response = await fetch(`http://localhost:8000/users/${user._id}`, {
+            const response = await fetch(`https://touch-the-beauty-ai.shop/users/${user._id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

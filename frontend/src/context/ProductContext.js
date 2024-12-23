@@ -11,7 +11,7 @@ export const ProductProvider = ({ children }) => {
     // Fetch products from the backend
     const fetchProducts = async () => {
         try {
-            const response = await fetch("http://localhost:8000/products");
+            const response = await fetch("https://touch-the-beauty-ai.shop/products");
             const data = await response.json();
             setProducts(data);
         } catch (error) {
