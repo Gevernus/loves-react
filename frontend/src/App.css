@@ -7,6 +7,11 @@ img {
   max-width: 430px;
 }
 
+body {
+  height: 100vh;
+  background-color: white;
+}
+
 .app {
   display: flex;
   flex-direction: column;
