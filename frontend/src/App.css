@@ -1,0 +1,336 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+img {
+  height: auto;
+  max-width: 430px;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.content {
+  max-width: 430px;
+  margin-bottom: 45px;
+}
+
+.ar-content {
+  max-width: 430px;
+  margin-bottom: 45px;
+}
+
+.cart-content {
+  max-width: 430px;
+  margin-bottom: 45px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.card {
+  height: 200px;
+  position: relative;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  overflow: hidden;
+  font-weight: bold;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.card-content {
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+}
+
+.card-content h3 {
+  font-size: 16px;
+  margin: 0 0 10px;
+}
+
+.card-content a {
+  font-size: 14px;
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.card-content a:hover {
+  text-decoration: underline;
+}
+
+.header {
+  align-self: flex-start;
+  width: 184px;
+  padding: 10px;
+}
+
+.footer {
+  height: 65px;
+  max-width: 430px;
+  position: fixed;
+  bottom: 0;
+  align-self: center;
+}
+
+footer .icon {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+footer .active {
+  color: #ff69b4;
+}
+
+#webar {
+  width: 100%;
+  height: 100%;
+  /* height: calc(40vh + 10vw); */
+}
+
+.container {
+  width: 100%;
+  max-width: 430px;
+}
+
+.color-selector {
+  height: 400px;
+  border-radius: 30px 30px 0 0;
+  box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.2),
+    /* Stronger top shadow */
+    0 4px 10px rgba(0, 0, 0, 0.1);
+  /* Bottom shadow */
+  padding: 16px;
+  overflow: hidden;
+  /* Ensures the border radius works with child elements */
+}
+
+.header {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.dropdown-arrow {
+  height: 8px;
+}
+
+.color-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.color-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-circle:hover {
+  transform: scale(1.1);
+}
+
+.no-color {
+  background: none;
+  border: 2px dashed #ccc;
+}
+
+.selected {
+  border: 3px solid #ff6a6a;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.product-title {
+  font-size: 14px;
+  color: #333;
+  flex-grow: 1;
+}
+
+.recipe-button {
+  height: 35px;
+}
+
+.menu {
+  width: 430px;
+  height: 65px;
+}
+
+#book {
+  position: absolute;
+  height: 30px;
+  top: 30%;
+  left: 15%;
+}
+
+#brush {
+  top: -90%;
+  left: 35.5%;
+  position: absolute;
+  height: 125px;
+}
+
+#cart {
+  position: absolute;
+  height: 35px;
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+  width: 150px;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-details {
+  flex-grow: 1;
+  padding: 16px;
+  gap: 10px;
+}
+
+.product-details h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.product-details p {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.remove-button {
+  background-color: #ff6b6b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+  background-color: #e53935;
+}
+
+.dropdown {
+  -webkit-appearance: none;
+  /* For Chrome, Safari, and others */
+  -moz-appearance: none;
+  /* For Firefox */
+  appearance: none;
+  /* Standard */
+  background: none;
+  /* No background */
+  border: none;
+  /* No border */
+  font-size: 16px;
+  /* Match text styling */
+  font-family: inherit;
+  /* Inherit parent font */
+  color: inherit;
+  /* Inherit parent color */
+  padding: 5px;
+  /* Add padding for click area */
+  cursor: pointer;
+  /* Make it clear it's clickable */
+  width: 150px;
+  /* Allow the size to fit content */
+}
+
+.slider-section {
+  margin: 10px 0;
+}
+
+.icon-container {
+  top: 20%;
+  left: 75%;
+  position: absolute;
+  height: 35px;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -50px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.card-link {
+  text-decoration: none;
+  /* Remove underline */
+  color: inherit;
+  /* Inherit color from parent container */
+  display: block;
+  /* Ensure it behaves as a block for wrapping content */
+}
+
+.order-button {
+  position: fixed;
+  bottom: 125px;
+  left: 0;
+}
