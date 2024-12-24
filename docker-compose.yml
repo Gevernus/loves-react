@@ -25,6 +25,10 @@ services:
     container_name: mongo
     ports:
       - "27017:27017" # Expose the MongoDB port
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: fsdfweJLFsdf1!32#
+      MONGO_INITDB_DATABASE: loves-db
     volumes:
       - mongodb_data:/data/db # Persistent storage for MongoDB data
       # - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js # Run initialization script on startup
@@ -71,7 +75,7 @@ services:
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     environment:
       - NODE_ENV=production
-      - MONGO_URI=mongodb://mongo:27017/loves-db
+      - MONGO_URI=mongodb://admin:fsdfweJLFsdf1!32#@mongo:27017/loves-db?authSource=admin
     volumes:
       - ./backend:/app
       - /app/node_modules
