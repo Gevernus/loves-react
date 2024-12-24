@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const mongoUri = process.env.MONGO_URI || "mongodb://mongo:27017/loves-db";
+const mongoUri = process.env.MONGO_URI || "mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin";
 
 // Подключение к MongoDB
 mongoose.connect(mongoUri, {

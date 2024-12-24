@@ -1,4 +1,3 @@
-db.auth("admin", "GevPass12");
 db = db.getSiblingDB('loves-db');  // Switch to the cosmetic-store DB
 
 
