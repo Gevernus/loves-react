@@ -27,7 +27,7 @@ services:
       - "27017:27017" # Expose the MongoDB port
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: fsdfweJLFsdf1!32#
+      MONGO_INITDB_ROOT_PASSWORD: GevPass12
       MONGO_INITDB_DATABASE: loves-db
     volumes:
       - mongodb_data:/data/db # Persistent storage for MongoDB data
@@ -75,7 +75,7 @@ services:
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     environment:
       - NODE_ENV=production
-      - MONGO_URI=mongodb://admin:fsdfweJLFsdf1!32#@mongo:27017/loves-db?authSource=admin
+      - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin
     volumes:
       - ./backend:/app
       - /app/node_modules
