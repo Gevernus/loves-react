@@ -1,4 +1,5 @@
 db = db.getSiblingDB('loves-db');  // Switch to the cosmetic-store DB
+db.auth("admin", "fsdfweJLFsdf1!32#");
 
 // Insert initial products
 db.products.insertMany([
