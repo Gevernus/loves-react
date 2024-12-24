@@ -27,7 +27,7 @@ services:
       - "27017:27017" # Expose the MongoDB port
     volumes:
       - mongodb_data:/data/db # Persistent storage for MongoDB data
-      - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js # Run initialization script on startup
+      # - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js # Run initialization script on startup
     networks:
       - web
     restart: unless-stopped
