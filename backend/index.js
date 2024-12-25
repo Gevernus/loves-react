@@ -143,21 +143,6 @@ app.post("/api/payment", (req, res) => {
     res.json({ url });
 });
 
-//Admin panel endpoints
-app.get("/api/admin/products", async (req, res) => {
-    const { _sort = "id", _order = "ASC", _start = 0, _end = 10 } = req.query;
-    const total = await Product.countDocuments();
-
-    const products = await Product.find()
-        .sort({ [_sort]: _order === "ASC" ? 1 : -1 })
-        .skip(parseInt(_start))
-        .limit(parseInt(_end) - parseInt(_start));
-
-    res.set('Content-Range', `products ${_start}-${_end}/${total}`);
-    res.set('Access-Control-Expose-Headers', 'Content-Range');
-    res.json(products);
-});
-
 app.get("/api/admin/products/:id", async (req, res) => {
     const product = await Product.findById(req.params.id);
     res.json(product);
@@ -180,18 +165,28 @@ app.delete("/api/admin/products/:id", async (req, res) => {
 });
 
 // Users endpoints
-app.get("/api/admin/users", async (req, res) => {
-    const { _sort = "id", _order = "ASC", _start = 0, _end = 10 } = req.query;
-    const total = await User.countDocuments();
+const handleAdminRoute = (Model, resourceName) => async (req, res) => {
+    try {
+        const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
+        const [start, end] = req.query.range ? JSON.parse(req.query.range) : [0, 9];
+        const [sortField, sortOrder] = req.query.sort ? JSON.parse(req.query.sort) : ["id", "ASC"];
+        console.log(`Start: ${start}:${req.query.range}`)
+        const total = await Model.countDocuments(filter);
+        const items = await Model.find(filter)
+            .sort({ [sortField]: sortOrder === "ASC" ? 1 : -1 })
+            .skip(start)
+            .limit(end - start + 1);
 
-    const users = await User.find()
-        .sort({ [_sort]: _order === "ASC" ? 1 : -1 })
-        .skip(parseInt(_start))
-        .limit(parseInt(_end) - parseInt(_start));
-    res.set('Content-Range', `products ${_start}-${_end}/${total}`);
-    res.set('Access-Control-Expose-Headers', 'Content-Range');
-    res.json(users);
-});
+        res.set('Content-Range', `${resourceName} ${start}-${Math.min(end, total)}/${total}`);
+        res.set('Access-Control-Expose-Headers', 'Content-Range');
+        res.json(items);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+app.get("/api/admin/products", handleAdminRoute(Product, "products"));
+app.get("/api/admin/users", handleAdminRoute(User, "users"));
 
 app.get("/api/admin/users/:id", async (req, res) => {
     const user = await User.findById(req.params.id);
