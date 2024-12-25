@@ -4,6 +4,7 @@ import { useAR } from '../../context/ARContext';
 import { useBanuba } from '../../context/BanubaContext';
 import ColorPalette from './ColorPalette';
 import ProductInfo from './ProductInfo';
+import CareSlider from './CareSlider';
 import Footer from '../Layout/Footer';
 import Header from '../Layout/Header';
 
@@ -93,8 +94,17 @@ const ARView = () => {
                     </div>
                     {product ? (
                         <>
-                            <ColorPalette product={product} />
-                            <ProductInfo product={product} />
+                            {product.colors && product.colors.length > 0 ? (
+                                <>
+                                    <ColorPalette product={product} />
+                                    <ProductInfo product={product} />
+                                </>
+                            ) : (
+                                <>
+                                    <CareSlider product={product} />
+                                    <ProductInfo product={product} />
+                                </>
+                            )}
                         </>
                     ) : (
                         <p className="text-center text-gray-500">No products available in this category.</p>

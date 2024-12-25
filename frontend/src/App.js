@@ -11,6 +11,7 @@ import { ProductProvider, useProducts } from './context/ProductContext';
 import { CartProvider } from './context/CartContext';
 import { UserProvider, useUser } from './context/UserContext';
 import CartView from './components/Cart/CartView';
+import OnboardingScreen from './components/common/OnboardingScreen';
 
 // This component handles initialization and loading state
 const AppContent = () => {
@@ -48,6 +49,7 @@ const AppContent = () => {
         <Route path="/" element={<HomeScreen />} />
         <Route path="/ar/:category" element={<ARView />} />
         <Route path="/cart" element={<CartView />} />
+        <Route path="/board" element={<OnboardingScreen />} />
       </Routes>
     </ARProvider>
   );

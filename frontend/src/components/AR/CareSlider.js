@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
+import { useBanuba } from '../../context/BanubaContext';
 
-const CareSlider = ({ value, onChange }) => {
+const CareSlider = ({ product }) => {
+    const { setParam } = useBanuba();
+    const [value, setValue] = useState(0.0);
+    const handleChange = (event) => {
+        setValue(event.target.value);
+        setParam(product.category, event.target.value);
+    };
     return (
         <div id="care-slider" className="slider-section" style={{ display: 'block' }}>
             <label htmlFor="softlight-slider">Softlight:</label>
@@ -11,7 +18,7 @@ const CareSlider = ({ value, onChange }) => {
                 max="1"
                 step="0.1"
                 value={value}
-                onChange={onChange}
+                onChange={handleChange}
             />
         </div>
     );

@@ -72,7 +72,7 @@ class BanubaService {
             eyeliner: 'Makeup.eyeliner',
             blushes: 'Makeup.blushes',
             lashes: 'Eyelashes.color',
-            softlight: 'Softlight.strength'
+            care: 'Softlight.strength'
         };
 
         const category = categoryMapping[key];
