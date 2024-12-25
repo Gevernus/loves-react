@@ -1,0 +1,11 @@
+.form-adress input:focus {
+    outline-color: #FB2D98;
+}
+
+.form-adress textarea:focus {
+    outline-color: #FB2D98;
+}
+
+.form-adress select:focus {
+    outline-color: #FB2D98;
+}

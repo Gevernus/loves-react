@@ -1,11 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}", // Ensures Tailwind scans your React components for class names
+    "./src/**/*.{js,jsx,ts,tsx}", // Указывает Tailwind на файлы, в которых используются классы
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        bej: '#F7F6F6', // Добавление пользовательского цвета
+      },
+    },
   },
   plugins: [],
-}
-
+};
