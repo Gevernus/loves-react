@@ -68,13 +68,13 @@ const ARView = () => {
                             value={selectedCategory}
                             onChange={handleCategoryChange}
                         >
-                            <option value="lips">Lips</option>
-                            <option value="brows">Brows</option>
-                            <option value="care">Care</option>
-                            <option value="blushes">Blushes</option>
-                            <option value="eyeshadow">Eyeshadow</option>
-                            <option value="lashes">Lashes</option>
-                            <option value="eyeliner">Eyeliners</option>
+                            <option value="lips">Губы</option>
+                            <option value="brows">Брови</option>
+                            <option value="care">Уход</option>
+                            <option value="blushes">Румяна</option>
+                            <option value="eyeshadow">Тени</option>
+                            <option value="lashes">Ресницы</option>
+                            <option value="eyeliner">Подводки</option>
                         </select>
                         <img id="1" className="dropdown-arrow" src="/arrow.png" alt="menu" />
                         <select
