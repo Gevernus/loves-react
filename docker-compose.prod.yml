@@ -67,7 +67,7 @@ services:
     container_name: loves-react-admin
     ports:
       - "4000:4000"
-    abels:
+    labels:
       - "traefik.enable=true"
       - "traefik.http.routers.admin.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/admin`)"
       - "traefik.http.routers.admin.entrypoints=websecure"
