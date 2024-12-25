@@ -1,6 +1,8 @@
 .onboarding-screen {
     position: relative;
-    width: 100%;
+    margin: 0 auto;
+    max-width: 430px;
+    overflow: hidden;
     height: 100vh;
     display: flex;
     align-items: center;
@@ -40,13 +42,56 @@ h2 {
     flex-direction: column;
     align-items: flex-start;
     margin-bottom: 20px;
+    margin-left: 36px;
 }
 
 .checkbox-group label {
+    position: relative;
     margin: 7px 0;
     font-size: 16px;
     display: flex;
     gap: 10px;
+}
+
+.checkbox-group input {
+    display: none;
+}
+
+.checkbox-group label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -36px;
+    width: 20px;
+    height: 20px;
+    background-color: #FB2D98;
+    border-radius: 4px;
+}
+
+.checkbox-group label::after {
+    content: "";
+    position: absolute;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    top: 5px;
+    left: -31px;
+    width: 10px;
+    height: 6px;
+    border-radius: 1px;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    opacity: 0;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.checkbox-group label:has(input:checked)::after  {
+    opacity: 1;
 }
 
 .continue-button {
