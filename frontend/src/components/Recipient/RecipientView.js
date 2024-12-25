@@ -2,20 +2,20 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../Layout/Footer';
 
-const BasketView = () => {
+const RecipientView = () => {
     const navigate = useNavigate();
     
     const handleCartRedirect = () => {
         navigate('/cart'); // Redirect to the cart page
     };
-    const handleRecipientRedirect = () => {
-        navigate('/recipient'); // Redirect to the Recipient page
+    const handlePaymentRedirect = () => {
+        navigate('/payment'); // Redirect to the Recipient page
     };
     
     return (
         <div className="app">
             <div className="relative px-4 py-3 border-b w-full">
-                <h1 className="text-lg font-medium text-center">Выбор адреса</h1>
+                <h1 className="text-lg font-medium text-center">Оформление заказа</h1>
                 <div
                  onClick={handleCartRedirect} 
                 className="absolute top-4 right-4 w-6 h-6">
@@ -24,9 +24,9 @@ const BasketView = () => {
                 </div>
             </div>
             <button
-                 onClick={handleRecipientRedirect}
+                 onClick={handlePaymentRedirect}
                  className="bg-pink-500 text-white rounded-full py-3 mt-4 order-button">
-                    Оформить заказ
+                    Сохранить и продолжить
             </button>
             <Footer />
         </div>
@@ -34,4 +34,4 @@ const BasketView = () => {
     );
 };
 
-export default BasketView;
+export default RecipientView;

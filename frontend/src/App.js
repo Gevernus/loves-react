@@ -14,6 +14,8 @@ import CartView from './components/Cart/CartView';
 import OnboardingScreen from './components/common/OnboardingScreen';
 import { initGA, pageView } from './services/Analytics';
 import BasketView from './components/Basket/BasketView';
+import RecipientView from './components/Recipient/RecipientView';
+import PaymentView from './components/Payment/PaymentView';
 
 // This component handles initialization and loading state
 const AppContent = () => {
@@ -59,6 +61,8 @@ const AppContent = () => {
         <Route path="/ar/:category" element={<ARView />} />
         <Route path="/cart" element={<CartView />} />
         <Route path="/basket" element={<BasketView />} />
+        <Route path="/recipient" element={<RecipientView />} />
+        <Route path="/payment" element={<PaymentView />} />
         
       </Routes>
     </ARProvider>
