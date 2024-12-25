@@ -7,6 +7,9 @@ frontend/build
 backend/node_modules
 backend/.DS_Store
 backend/build
+admin/node_modules
+admin/.DS_Store
+admin/build
 
 /data
 

@@ -60,6 +60,31 @@ services:
       - backend
     restart: unless-stopped
 
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: loves-react-admin
+    ports:
+      - "4000:4000"
+    abels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.entrypoints=websecure"
+      - "traefik.http.routers.admin.tls.certresolver=myresolver"
+      - "traefik.http.services.admin.loadbalancer.server.port=4000"
+    environment:
+      - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api/admin
+      - NODE_ENV=production
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    networks:
+      - web
+    depends_on:
+      - backend
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
