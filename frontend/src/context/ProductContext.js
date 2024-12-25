@@ -4,6 +4,8 @@ const ProductContext = createContext();
 
 export const useProducts = () => useContext(ProductContext);
 
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+
 export const ProductProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ export const ProductProvider = ({ children }) => {
     const fetchProducts = async () => {
         try {
             // const response = await fetch("https://touch-the-beauty-ai.shop/api/products");
-            const response = await fetch("http://localhost:8000/api/products");
+            const response = await fetch(`${apiUrl}/products`);
             const data = await response.json();
             setProducts(data);
         } catch (error) {

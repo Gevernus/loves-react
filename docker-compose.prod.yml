@@ -49,8 +49,8 @@ services:
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     environment:
-      - REACT_APP_API_URL=http://localhost:8000/api
-      - NODE_ENV=development
+      - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api
+      - NODE_ENV=production
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -69,13 +69,13 @@ services:
       - "4000:4000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.admin.rule=Host(`touch-the-beauty-ai.shop/admin`)"
+      - "traefik.http.routers.admin.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/admin`)"
       - "traefik.http.routers.admin.entrypoints=websecure"
       - "traefik.http.routers.admin.tls.certresolver=myresolver"
       - "traefik.http.services.admin.loadbalancer.server.port=4000"
     environment:
-      - REACT_APP_API_URL=http://localhost:8000/api/admin
-      - NODE_ENV=development
+      - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api/admin
+      - NODE_ENV=production
     volumes:
       - ./admin:/app
       - /app/node_modules
