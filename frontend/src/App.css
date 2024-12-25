@@ -335,7 +335,7 @@ footer .active {
 }
 
 .order-button {
-  position: fixed;
-  bottom: 125px;
-  left: 0;
+  max-width: 430px;
+  width: 100%;  
 }
+

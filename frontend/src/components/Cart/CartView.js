@@ -11,6 +11,9 @@ const CartView = () => {
     const handleCatalogRedirect = () => {
         navigate('/'); // Redirect to the catalogue page
     };
+    const handleBasketRedirect = () => {
+        navigate('/basket'); // Redirect to the Basket page
+    };
     if (cart.length === 0) {
         // Empty cart view
         return (
@@ -28,7 +31,7 @@ const CartView = () => {
                 </div>
                 <button
                     onClick={handleCatalogRedirect}
-                    className="w-full bg-pink-500 text-white rounded-full py-3 mt-4 order-button"
+                    className="bg-pink-500 text-white rounded-full py-3 mt-4 order-button"
                 >
                     Перейти в каталог
                 </button>
@@ -68,7 +71,7 @@ const CartView = () => {
                 </div>
 
                 {/* Order Summary */}
-                <div className="flex flex-col border-t">
+                <div className="flex flex-col mt-8">
                     <h2 className="text-lg font-medium mb-3">Ваш заказ:</h2>
                     <div className="space-y-2">
                         <div className="flex justify-between">
@@ -86,7 +89,9 @@ const CartView = () => {
                     </div>
 
                 </div>
-                <button className="w-full bg-pink-500 text-white rounded-full py-3 mt-4 order-button">
+                <button
+                 onClick={handleBasketRedirect}
+                 className="bg-pink-500 text-white rounded-full py-3 mt-4 order-button">
                     Оформить заказ
                 </button>
                 <Footer />

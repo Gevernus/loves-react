@@ -13,6 +13,7 @@ import { UserProvider, useUser } from './context/UserContext';
 import CartView from './components/Cart/CartView';
 import OnboardingScreen from './components/common/OnboardingScreen';
 import { initGA, pageView } from './services/Analytics';
+import BasketView from './components/Basket/BasketView';
 
 // This component handles initialization and loading state
 const AppContent = () => {
@@ -57,7 +58,8 @@ const AppContent = () => {
         <Route path="/" element={<HomeScreen />} />
         <Route path="/ar/:category" element={<ARView />} />
         <Route path="/cart" element={<CartView />} />
-        <Route path="/board" element={<OnboardingScreen />} />
+        <Route path="/basket" element={<BasketView />} />
+        
       </Routes>
     </ARProvider>
   );
