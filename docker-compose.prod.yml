@@ -49,8 +49,8 @@ services:
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     environment:
-      - REACT_APP_API_URL=https://localhost:8000/api
-      - NODE_ENV=development
+      - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api
+      - NODE_ENV=production
     volumes:
       - ./frontend:/app
       - /app/node_modules

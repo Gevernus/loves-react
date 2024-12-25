@@ -119,6 +119,72 @@ app.post("/api/payment", (req, res) => {
     res.json({ url });
 });
 
+//Admin panel endpoints
+app.get("/api/admin/products", async (req, res) => {
+    const { _sort = "id", _order = "ASC", _start = 0, _end = 10 } = req.query;
+    const total = await Product.countDocuments();
+
+    const products = await Product.find()
+        .sort({ [_sort]: _order === "ASC" ? 1 : -1 })
+        .skip(parseInt(_start))
+        .limit(parseInt(_end) - parseInt(_start));
+
+    res.set("X-Total-Count", total);
+    res.set("Access-Control-Expose-Headers", "X-Total-Count");
+    res.json(products);
+});
+
+app.get("/api/admin/products/:id", async (req, res) => {
+    const product = await Product.findById(req.params.id);
+    res.json(product);
+});
+
+app.post("/api/admin/products", async (req, res) => {
+    const product = new Product(req.body);
+    await product.save();
+    res.json(product);
+});
+
+app.put("/api/admin/products/:id", async (req, res) => {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(product);
+});
+
+app.delete("/api/admin/products/:id", async (req, res) => {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ id: req.params.id });
+});
+
+// Users endpoints
+app.get("/api/admin/users", async (req, res) => {
+    const { _sort = "id", _order = "ASC", _start = 0, _end = 10 } = req.query;
+    const total = await User.countDocuments();
+
+    const users = await User.find()
+        .sort({ [_sort]: _order === "ASC" ? 1 : -1 })
+        .skip(parseInt(_start))
+        .limit(parseInt(_end) - parseInt(_start));
+
+    res.set("X-Total-Count", total);
+    res.set("Access-Control-Expose-Headers", "X-Total-Count");
+    res.json(users);
+});
+
+app.get("/api/admin/users/:id", async (req, res) => {
+    const user = await User.findById(req.params.id);
+    res.json(user);
+});
+
+app.put("/api/admin/users/:id", async (req, res) => {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(user);
+});
+
+app.delete("/api/admin/users/:id", async (req, res) => {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ id: req.params.id });
+});
+
 // Запуск сервера
 app.listen(8000, () => {
     console.log("Backend running on http://localhost:8000");
