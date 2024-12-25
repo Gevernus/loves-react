@@ -1,7 +1,7 @@
 // App.js
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import HomeScreen from './components/Home/HomeScreen';
 import ARView from './components/AR/ARView';
 import LoadingScreen from './components/common/LoadingScreen';
@@ -12,12 +12,15 @@ import { CartProvider } from './context/CartContext';
 import { UserProvider, useUser } from './context/UserContext';
 import CartView from './components/Cart/CartView';
 import OnboardingScreen from './components/common/OnboardingScreen';
+import { initGA, pageView } from './services/Analytics';
 
 // This component handles initialization and loading state
 const AppContent = () => {
   const { loading: isUserLoading } = useUser();
   const { isInitialized: isBanubaReady, initialize: initializeBanuba } = useBanuba();
-  const { loading: isProductLoading, refresh } = useProducts();
+  const { loading: isProductLoading } = useProducts();
+  const [analyticsReady, setAnalyticsReady] = useState(false);
+  const location = useLocation()
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -26,8 +29,9 @@ const AppContent = () => {
           await initializeBanuba();
         }
 
-        if (!isProductLoading) {
-          await refresh();
+        if (!analyticsReady) {
+          setAnalyticsReady(true)
+          initGA()          
         }
 
       } catch (error) {
@@ -36,7 +40,11 @@ const AppContent = () => {
     };
 
     initializeApp();
-  }, [initializeBanuba]);
+  }, [initializeBanuba, analyticsReady]);
+
+  useEffect(() => {
+    pageView(location.pathname)
+  }, [location])
 
   // Show loading screen until both services are ready
   if (isUserLoading || !isBanubaReady || isProductLoading) {
