@@ -21,7 +21,7 @@ export const ProductList = () => (
             <TextField source="name" />
             <NumberField source="price" />
             <TextField source="category" />
-            <ImageField source="image" />
+            <TextField source="image" />
             <EditButton />
         </Datagrid>
     </List>
@@ -34,9 +34,7 @@ export const ProductEdit = () => (
             <NumberInput source="price" />
             <TextInput source="category" />
             <TextInput source="description" multiline rows={4} />
-            <ImageInput source="image" label="Product Image" accept="image/*">
-                <ImageField source="src" />
-            </ImageInput>
+            <TextInput source="image" />
             <ArrayInput source="colors">
                 <SimpleFormIterator>
                     <TextInput />
@@ -53,9 +51,7 @@ export const ProductCreate = () => (
             <NumberInput source="price" />
             <TextInput source="category" />
             <TextInput source="description" multiline rows={4} />
-            <ImageInput source="image" label="Product Image" accept="image/*">
-                <ImageField source="src" />
-            </ImageInput>
+            <TextInput source="image" />
             <ArrayInput source="colors">
                 <SimpleFormIterator>
                     <TextInput />
