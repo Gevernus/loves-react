@@ -14,6 +14,7 @@ import {
 } from 'react-admin';
 
 const ProductsField = ({ record }) => {
+    console.log(record);
     if (!record || !record.items) return null;
 
     return (

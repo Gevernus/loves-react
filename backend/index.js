@@ -195,7 +195,6 @@ const handleAdminRoute = (Model, resourceName) => async (req, res) => {
         const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
         const [start, end] = req.query.range ? JSON.parse(req.query.range) : [0, 9];
         const [sortField, sortOrder] = req.query.sort ? JSON.parse(req.query.sort) : ["id", "ASC"];
-        console.log(`Start: ${start}:${req.query.range}`)
         const total = await Model.countDocuments(filter);
         const items = await Model.find(filter)
             .sort({ [sortField]: sortOrder === "ASC" ? 1 : -1 })
