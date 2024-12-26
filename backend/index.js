@@ -263,60 +263,94 @@ app.post('/api/create-payment', async (req, res) => {
         const savedOrder = await newOrder.save();
 
         console.log("Order saved:", savedOrder);
-        console.log(authToken);
-        console.log(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`);
         // Step 1: Get security token
-        const tokenResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${authToken}`
-            },
-            signal: AbortSignal.timeout(60 * 1000),
-        });
+        // const tokenResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //         'Authorization': `Basic ${authToken}`
+        //     },
+        //     signal: AbortSignal.timeout(60 * 1000),
+        // });
 
-        if (!tokenResponse.ok) {
-            throw new Error(`Failed to get security token: ${tokenResponse.statusText}`);
-        }
+        // if (!tokenResponse.ok) {
+        //     throw new Error(`Failed to get security token: ${tokenResponse.statusText}`);
+        // }
 
-        const tokenData = await tokenResponse.json();
-        if (!tokenData.token) {
-            throw new Error('Security token not received');
-        }
+        // const tokenData = await tokenResponse.json();
+        // if (!tokenData.token) {
+        //     throw new Error('Security token not received');
+        // }
 
-        // Prepare payment data with security token
-        const paymentData = {
-            pay_amount: total,
-            clientid: userId || 'guest@example.com',
-            orderid: savedOrder._id.toString(),
-            token: tokenData.token // Add the security token to the payment data
-        };
+        // // Prepare payment data with security token
+        // const paymentData = {
+        //     pay_amount: total,
+        //     clientid: userId || 'guest@example.com',
+        //     orderid: savedOrder._id.toString(),
+        //     token: tokenData.token // Add the security token to the payment data
+        // };
 
-        console.log("Payment data prepared:", paymentData);
+        // console.log("Payment data prepared:", paymentData);
 
-        // Step 2: Create invoice
-        const invoiceResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/change/invoice/preview/`, {
+        // // Step 2: Create invoice
+        // const invoiceResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/change/invoice/preview/`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //         'Authorization': `Basic ${authToken}`
+        //     },
+        //     signal: AbortSignal.timeout(60 * 1000),
+        //     body: new URLSearchParams(paymentData).toString()
+        // });
+
+        // if (!invoiceResponse.ok) {
+        //     throw new Error(`Failed to create invoice: ${invoiceResponse.statusText}`);
+        // }
+
+        // const invoiceData = await invoiceResponse.json();
+
+        // if (!invoiceData.invoice_id) {
+        //     throw new Error('Invoice ID not received');
+        // }
+
+        // // Generate payment URL
+        // const paymentUrl = `${PAYKEEPER_CONFIG.baseUrl}/bill/${invoiceData.invoice_id}/`;
+
+        const response = await fetch('http://paykeeper-service:5000/api/paykeeper', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${authToken}`
+                'Content-Type': 'application/json',
             },
-            signal: AbortSignal.timeout(60 * 1000),
-            body: new URLSearchParams(paymentData).toString()
+            body: JSON.stringify({
+                userId,
+                total,
+                orderId: savedOrder._id.toString()
+            })
         });
 
-        if (!invoiceResponse.ok) {
-            throw new Error(`Failed to create invoice: ${invoiceResponse.statusText}`);
+        // Check if the response is OK (status code 200-299)
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const invoiceData = await invoiceResponse.json();
+        // Parse the JSON response
+        const data = await response.json();
 
-        if (!invoiceData.invoice_id) {
-            throw new Error('Invoice ID not received');
+        if (data.success) {
+            console.log(data);
+            savedOrder.paymentId = data.invoice_id;
+            savedOrder.paymentUrl = data.paymentUrl;
+            await savedOrder.save();
+
+            res.json({
+                success: true,
+                order: savedOrder,
+                paymentUrl: data.paymentUrl
+            });
+        } else {
+            throw new Error("Payment request failed");
         }
-
-        // Generate payment URL
-        const paymentUrl = `${PAYKEEPER_CONFIG.baseUrl}/bill/${invoiceData.invoice_id}/`;
+        
         // Update order with payment details
         savedOrder.paymentId = invoiceData.invoice_id;
         savedOrder.paymentUrl = paymentUrl;

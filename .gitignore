@@ -10,6 +10,9 @@ backend/build
 admin/node_modules
 admin/.DS_Store
 admin/build
+paykeeper-service/node_modules
+paykeeper-service/.DS_Store
+paykeeper-service/build
 
 /data
 
