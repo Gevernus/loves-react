@@ -1,7 +1,7 @@
 FROM node:23
 
 # Install CA certificates to ensure SSL/TLS verification
-RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+RUN apt-get install -y ca-certificates && update-ca-certificates
 
 # Set the working directory
 WORKDIR /app

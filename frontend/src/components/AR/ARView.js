@@ -80,7 +80,7 @@ const ARView = () => {
                         <select
                             id="product-dropdown"
                             className="dropdown"
-                            value={product ? product.id : ''}
+                            value={product ? product.name : ''}
                             onChange={handleProductChange}
                             disabled={!filteredProducts?.length}
                         >
