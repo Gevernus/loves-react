@@ -14,14 +14,28 @@ import {
 } from 'react-admin';
 
 const ProductsField = ({ record }) => {
-    console.log(record);
-    if (!record || !record.items) return null;
+    // Add more detailed logging
+    console.log('Full record:', record);
+    console.log('Items array:', record?.items);
+
+    // Make sure record exists and has items property
+    if (!record) {
+        console.log('Record is undefined');
+        return null;
+    }
+
+    if (!record.items) {
+        console.log('Items array is undefined');
+        return null;
+    }
 
     return (
         <ul>
             {record.items.map((item, index) => (
                 <li key={index}>
-                    Product ID: {item.productId}, Quantity: {item.quantity}, Price: {item.price}
+                    Product ID: {item.productId},
+                    Quantity: {item.quantity},
+                    Price: {item.price}
                 </li>
             ))}
         </ul>
@@ -38,7 +52,7 @@ export const OrderList = (props) => (
             <TextField source="paymentToken" label="Payment Token" />
             <TextField source="paymentUrl" label="Payment URL" />
             <TextField source="paymentId" label="Payment ID" />
-            <ProductsField label="Products" />
+            <ProductsField label="Products" source="items" />
             <DateField source="createdAt" label="Created At" />
             <DateField source="updatedAt" label="Updated At" />
         </Datagrid>
