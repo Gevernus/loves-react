@@ -1,0 +1,53 @@
+.container-payment{
+    position: relative;
+    height: 83vh;
+    max-width: 430px;
+    width: 100%;
+}
+
+.payment-button {
+    position: absolute;
+    bottom: 0;
+    left: 0;  
+}
+
+.item-payment label {
+    position: relative; 
+}
+
+.item-payment input {
+    
+    display: none;
+}
+
+.item-payment label::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -25px;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #FB2D98;
+    background-color: #ffffff;
+    border-radius: 100%;
+}
+
+.item-payment label::after {
+    content: "";
+    position: absolute;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    top: -5px;
+    left: -20px;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;   
+    background-color: #FB2D98;
+    opacity: 0;
+}
+
+.item-payment label:has(input:checked)::after  {
+    opacity: 1;
+}

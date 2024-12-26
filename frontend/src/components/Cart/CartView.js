@@ -71,7 +71,7 @@ const CartView = () => {
                 <div className="px-4 py-3 border-b w-full">
                     <h1 className="text-lg font-medium text-center">Моя корзина</h1>
                 </div>
-                <div className="flex flex-col items-center justify-center flex-1 px-4 py-6 mt-24">
+                <div className="flex flex-col items-center justify-center flex-1 px-4 py-6 mt-12">
                     <img
                         src="/empty-cart.png"
                         alt="Empty Cart"
