@@ -1,11 +1,14 @@
-.form-adress input:focus {
+.form-address input:focus {
     outline-color: #FB2D98;
 }
 
-.form-adress textarea:focus {
+.form-address textarea:focus {
     outline-color: #FB2D98;
 }
 
-.form-adress select:focus {
+.form-address select:focus {
     outline-color: #FB2D98;
+}
+.form-address {
+    max-width: 430px;
 }
