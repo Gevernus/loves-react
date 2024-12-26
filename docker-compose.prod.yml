@@ -17,8 +17,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
     restart: unless-stopped
-    networks:
-      - bridge  # Specify bridge network
+    network_mode: host  # Change to host network
 
   mongo:
     image: mongo:latest
@@ -31,8 +30,7 @@ services:
     volumes:
       - mongodb_data:/data/db # Persistent storage for MongoDB data
     restart: unless-stopped
-    networks:
-      - bridge  # Specify bridge network
+    network_mode: host  # Change to host network
 
   frontend:
     build:
@@ -56,8 +54,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-    networks:
-      - bridge  # Specify bridge network
+    network_mode: host  # Change to host network
 
   admin:
     build:
@@ -81,8 +78,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-    networks:
-      - bridge  # Specify bridge network
+    network_mode: host  # Change to host network
 
   backend:
     build:
@@ -104,8 +100,7 @@ services:
       - ./backend:/app
       - /app/node_modules
     restart: unless-stopped
-    networks:
-      - bridge 
+    network_mode: host  # Change to host network
 
 volumes:
-  mongodb_data:  # Persistent storage for MongoDB data
+  mongodb_data:
