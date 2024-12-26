@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors({
@@ -40,12 +41,36 @@ productSchema.set("toJSON", {
 const Product = mongoose.model("Product", productSchema);
 
 // Модель для заказов
-const Order = mongoose.model("Order", new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
     userId: String,
-    items: [{ productId: String, quantity: Number }],
-    total: Number,
+    items: [{
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        quantity: Number,
+        price: Number
+    }],
+    total: { type: Number, required: true },
+    status: {
+        type: String,
+        enum: ['pending', 'paid', 'failed', 'cancelled'],
+        default: 'pending'
+    },
+    paymentToken: String,
+    paymentUrl: String,
+    paymentId: String,
     createdAt: { type: Date, default: Date.now },
-}));
+    updatedAt: { type: Date, default: Date.now }
+});
+
+orderSchema.virtual("id").get(function () {
+    return this._id.toString();
+});
+
+// Ensure virtuals are included when converting documents to JSON
+orderSchema.set("toJSON", {
+    virtuals: true,
+});
+
+const Order = mongoose.model("Order", orderSchema);
 
 const userSchema = new mongoose.Schema({
     telegramId: { type: String, required: true, unique: true },
@@ -137,11 +162,11 @@ app.post("/api/orders", async (req, res) => {
     res.json(order);
 });
 
-app.post("/api/payment", (req, res) => {
-    const { orderId, total } = req.body;
-    const url = `https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=your_merchant&OutSum=${total}&InvId=${orderId}&SignatureValue=your_signature`;
-    res.json({ url });
-});
+// app.post("/api/payment", (req, res) => {
+//     const { orderId, total } = req.body;
+//     const url = `https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=your_merchant&OutSum=${total}&InvId=${orderId}&SignatureValue=your_signature`;
+//     res.json({ url });
+// });
 
 app.get("/api/admin/products/:id", async (req, res) => {
     const product = await Product.findById(req.params.id);
@@ -187,6 +212,7 @@ const handleAdminRoute = (Model, resourceName) => async (req, res) => {
 
 app.get("/api/admin/products", handleAdminRoute(Product, "products"));
 app.get("/api/admin/users", handleAdminRoute(User, "users"));
+app.get("/api/admin/orders", handleAdminRoute(Order, "orders"));
 
 app.get("/api/admin/users/:id", async (req, res) => {
     const user = await User.findById(req.params.id);
@@ -206,4 +232,185 @@ app.delete("/api/admin/users/:id", async (req, res) => {
 // Запуск сервера
 app.listen(8000, () => {
     console.log("Backend running on http://localhost:8000");
+});
+
+
+const PAYKEEPER_CONFIG = {
+    baseUrl: 'https://new-vimflat.server.paykeeper.ru',
+    login: 'admin',
+    password: 'cb9a9c4ae771',
+    webhookSecret: 'tEeFZ.MMaVaZET7crc'
+};
+
+// Create Basic Auth token
+const authToken = Buffer.from(
+    `${PAYKEEPER_CONFIG.login}:${PAYKEEPER_CONFIG.password}`
+).toString('base64');
+
+// Initialize payment
+app.post('/api/create-payment', async (req, res) => {
+    try {
+        const { userId, items, total } = req.body;
+        console.log("Received payment request:", { userId, items, total });
+
+        // Create order first
+        const newOrder = new Order({
+            userId,
+            items,
+            total,
+            status: 'pending'
+        });
+        const savedOrder = await newOrder.save();
+
+        console.log("Order saved:", savedOrder);
+
+        // Step 1: Get security token
+        const tokenResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Basic ${authToken}`
+            }
+        });
+
+        if (!tokenResponse.ok) {
+            throw new Error(`Failed to get security token: ${tokenResponse.statusText}`);
+        }
+
+        const tokenData = await tokenResponse.json();
+        if (!tokenData.token) {
+            throw new Error('Security token not received');
+        }
+
+        // Prepare payment data with security token
+        const paymentData = {
+            pay_amount: total,
+            clientid: userId || 'guest@example.com',
+            orderid: savedOrder._id.toString(),
+            token: tokenData.token // Add the security token to the payment data
+        };
+
+        console.log("Payment data prepared:", paymentData);
+
+        // Step 2: Create invoice
+        const invoiceResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/change/invoice/preview/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Basic ${authToken}`
+            },
+            body: new URLSearchParams(paymentData).toString()
+        });
+
+        if (!invoiceResponse.ok) {
+            throw new Error(`Failed to create invoice: ${invoiceResponse.statusText}`);
+        }
+
+        const invoiceData = await invoiceResponse.json();
+
+        if (!invoiceData.invoice_id) {
+            throw new Error('Invoice ID not received');
+        }
+
+        // Generate payment URL
+        const paymentUrl = `${PAYKEEPER_CONFIG.baseUrl}/bill/${invoiceData.invoice_id}/`;
+        // Update order with payment details
+        savedOrder.paymentId = invoiceData.invoice_id;
+        savedOrder.paymentUrl = paymentUrl;
+        await savedOrder.save();
+
+        res.json({
+            success: true,
+            order: savedOrder,
+            paymentUrl: paymentUrl
+        });
+    } catch (error) {
+        console.error("Error creating payment:", error);
+        res.status(500).json({
+            error: "Failed to create payment",
+            message: error.message
+        });
+    }
+});
+
+// Updated webhook handler to update order status
+app.post('/api/payment', express.raw({ type: 'application/json' }), async (req, res) => {
+    const signature = req.headers['x-paykeeper-signature'];
+    const payload = req.body;
+    console.log("Payment status updated:", payload);
+    const calculatedSignature = crypto
+        .createHmac('sha256', PAYKEEPER_CONFIG.webhookSecret)
+        .update(payload)
+        .digest('hex');
+    console.log("Crypro init", calculatedSignature);
+    if (crypto.timingSafeEqual(
+        Buffer.from(calculatedSignature),
+        Buffer.from(signature)
+    )) {
+        try {
+            const webhookData = JSON.parse(payload);
+            const orderId = webhookData.orderid;
+
+            // Update order status based on payment result
+            const order = await Order.findById(orderId);
+            if (order) {
+                order.status = webhookData.status === 'paid' ? 'paid' : 'failed';
+                order.updatedAt = new Date();
+                await order.save();
+
+                console.log(`Order ${orderId} status updated to ${order.status}`);
+            }
+
+            res.send('OK');
+        } catch (error) {
+            console.error('Webhook processing error:', error);
+            res.status(500).send('Error processing webhook');
+        }
+    } else {
+        console.log("Invalid signature");
+        res.status(400).send('Invalid signature');
+    }
+});
+
+// Get order status endpoint
+app.get('/api/orders/:orderId/status', async (req, res) => {
+    try {
+        const { orderId } = req.params;
+
+        // Fetch order details from the database
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        // Ensure PAYKEEPER_CONFIG and authToken are set
+        const { baseUrl } = PAYKEEPER_CONFIG;
+        if (!authToken) {
+            console.error('Authorization token is not defined.');
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        // Fetch payment status from PayKeeper
+        const response = await axios.get(`${baseUrl}/info/payments/byorder/${orderId}/`, {
+            headers: { 'Authorization': `Basic ${authToken}` },
+        });
+
+        // Respond with order and payment status
+        res.json({
+            orderId: order._id,
+            status: order.status,
+            paymentStatus: response.data,
+            total: order.total,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+        });
+    } catch (error) {
+        const errorMessage = error.response?.data || error.message || 'Unknown error';
+        console.error('Error fetching order status:', errorMessage);
+
+        res.status(500).json({
+            error: 'Failed to check order status',
+            details: errorMessage,
+        });
+    }
 });
