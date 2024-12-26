@@ -9,6 +9,7 @@ import {
     TextInput,
     SelectInput,
     ReferenceField,
+    FunctionField,
     ReferenceInput,
     NumberInput
 } from 'react-admin';
