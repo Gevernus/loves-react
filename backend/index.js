@@ -263,7 +263,7 @@ app.post('/api/create-payment', async (req, res) => {
         const savedOrder = await newOrder.save();
 
         console.log("Order saved:", savedOrder);
-
+        console.log(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`);
         // Step 1: Get security token
         const tokenResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`, {
             method: 'GET',
@@ -271,7 +271,7 @@ app.post('/api/create-payment', async (req, res) => {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': `Basic ${authToken}`
             },
-            timeout: 30000,
+            signal: AbortSignal.timeout(60 * 1000),
         });
 
         if (!tokenResponse.ok) {
@@ -300,7 +300,7 @@ app.post('/api/create-payment', async (req, res) => {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': `Basic ${authToken}`
             },
-            timeout: 30000,
+            signal: AbortSignal.timeout(60 * 1000),
             body: new URLSearchParams(paymentData).toString()
         });
 
