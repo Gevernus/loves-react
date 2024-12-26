@@ -270,7 +270,8 @@ app.post('/api/create-payment', async (req, res) => {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': `Basic ${authToken}`
-            }
+            },
+            timeout: 30000,
         });
 
         if (!tokenResponse.ok) {
@@ -299,6 +300,7 @@ app.post('/api/create-payment', async (req, res) => {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': `Basic ${authToken}`
             },
+            timeout: 30000,
             body: new URLSearchParams(paymentData).toString()
         });
 
