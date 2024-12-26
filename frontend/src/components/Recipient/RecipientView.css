@@ -1,0 +1,8 @@
+.form-recipient input:focus {
+    outline-color: #FB2D98;
+}
+
+.container-recipient {
+    max-width: 430px;
+    width: 100%;
+}

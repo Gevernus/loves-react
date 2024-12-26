@@ -5,23 +5,33 @@ import Footer from '../Layout/Footer';
 
 const BasketView = () => {
     const navigate = useNavigate();
-    const [city, setCity] = useState('');
-    const [address, setAddress] = useState('');
-    const [flat, setFlat] = useState('');
-    const [intercom, setIntercom] = useState('');
-    const [entrance, setEntrance] = useState('');
-    const [floor, setFloor] = useState('');
-    const [date, setDate] = useState('');
-    const [comment, setComment] = useState('');
+    const [formData, setFormData] = useState({
+        city: 'moscow',
+        address: '',
+        flat: '',
+        intercom: '',
+        entrance: '',
+        floor: '',
+        date: '',
+        comment: '',
+    });
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
 
     const handleCartRedirect = () => {
-        navigate('/cart'); // Redirect to the cart page
+        navigate('/cart'); // Переход на страницу корзины
     };
 
     const handleRecipientRedirect = (event) => {
-        event.preventDefault(); // Prevent default form submission
-        // Handle form submission logic here
-        console.log({ city, address });
+        event.preventDefault(); // Предотвращение стандартного поведения
+        // Отправка данных формы
+        console.log(formData);
         navigate('/recipient');
     };
 
@@ -32,98 +42,102 @@ const BasketView = () => {
                 <div
                     onClick={handleCartRedirect}
                     className="absolute top-4 right-4 w-6 h-6 cursor-pointer"
-                    aria-label="Close">
+                    aria-label="Закрыть">
                     <span className="absolute top-1/2 left-0 w-full h-[2px] bg-black transform -translate-y-1/2 rotate-45"></span>
                     <span className="absolute top-1/2 left-0 w-full h-[2px] bg-black transform -translate-y-1/2 -rotate-45"></span>
                 </div>
             </div>
 
-            <form className='form-adress grid gap-2 grid-cols-2 px-4' onSubmit={handleRecipientRedirect}>
-                
+            <form className="form-address grid gap-2 grid-cols-2 px-4" onSubmit={handleRecipientRedirect}>
                 <select
-                className='col-span-2 my-6'
+                    className="col-span-2 my-6"
                     name="city"
-                    
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    value={formData.city}
+                    onChange={handleInputChange}
                 >
                     <option value="" disabled>
                         -- Выберите город --
                     </option>
-                    <option value="moscow" selected>Москва</option>
+                    <option value="moscow">Москва</option>
                     <option value="samara">Самара</option>
                     <option value="perm">Пермь</option>
                     <option value="novosibirsk">Новосибирск</option>
                 </select>
 
-                <label  className="col-span-2">                   
-                    <input                        
+                <label className="col-span-2">
+                    <input
+                        name="address"
                         className="input w-full h-14 rounded-2xl px-4 bg-bej"
                         type="text"
                         placeholder="Улица и дом"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        value={formData.address}
+                        onChange={handleInputChange}
                     />
                 </label>
-                <label className='' >                   
-                    <input                        
+                <label>
+                    <input
+                        name="flat"
                         className="input w-full h-14 rounded-2xl px-4 bg-bej"
                         type="number"
-                        placeholder="кв./офис"
-                        value={flat}
-                        onChange={(e) => setFlat(e.target.value)}
+                        placeholder="Кв./офис"
+                        value={formData.flat}
+                        onChange={handleInputChange}
                     />
                 </label>
-                <label className='' >                   
-                    <input                        
+                <label>
+                    <input
+                        name="intercom"
                         className="input w-full h-14 rounded-2xl px-4 bg-bej"
                         type="text"
                         placeholder="Домофон"
-                        value={intercom}
-                        onChange={(e) => setIntercom(e.target.value)}
+                        value={formData.intercom}
+                        onChange={handleInputChange}
                     />
                 </label>
-                <label className='' >                   
-                    <input                        
+                <label>
+                    <input
+                        name="entrance"
                         className="input w-full h-14 rounded-2xl px-4 bg-bej"
                         type="number"
                         placeholder="Подъезд"
-                        value={entrance}
-                        onChange={(e) => setEntrance(e.target.value)}
+                        value={formData.entrance}
+                        onChange={handleInputChange}
                     />
                 </label>
-                <label className='' >                   
-                    <input                        
-                        className="input w-full  h-14 rounded-2xl px-4 bg-bej"
+                <label>
+                    <input
+                        name="floor"
+                        className="input w-full h-14 rounded-2xl px-4 bg-bej"
                         type="number"
                         placeholder="Этаж"
-                        value={floor}
-                        onChange={(e) => setFloor(e.target.value)}
+                        value={formData.floor}
+                        onChange={handleInputChange}
                     />
                 </label>
-                <label className="col-span-2" >                   
-                    <input                        
+                <label className="col-span-2">
+                    <input
+                        name="date"
                         className="input w-full h-14 rounded-2xl px-4 bg-bej"
                         type="date"
-                        placeholder="Дата"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
+                        value={formData.date}
+                        onChange={handleInputChange}
                     />
                 </label>
-                <label className='col-span-2 mt-8' >
-                Комментарий курьеру                   
-                    <textarea                        
+                <label className="col-span-2 mt-8">
+                    Комментарий курьеру
+                    <textarea
+                        name="comment"
                         className="input w-full h-32 rounded-2xl mt-6 p-4 bg-bej"
-                        
-                        placeholder="Ваши пожелания для доставки"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
+                        placeholder="Ваши пожелания для доставки"
+                        value={formData.comment}
+                        onChange={handleInputChange}
                     ></textarea>
                 </label>
 
                 <button
                     type="submit"
-                    className="bg-pink-500 text-white rounded-full py-3 mt-8 col-span-2 ">
+                    className="bg-pink-500 text-white rounded-full py-3 mt-8 col-span-2 disabled:opacity-50"
+                    disabled={!formData.address || !formData.date}>
                     Оформить заказ
                 </button>
             </form>
