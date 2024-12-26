@@ -52,7 +52,14 @@ export const OrderList = (props) => (
             <TextField source="paymentToken" label="Payment Token" />
             <TextField source="paymentUrl" label="Payment URL" />
             <TextField source="paymentId" label="Payment ID" />
-            <ProductsField label="Products" source="items" />
+            <FunctionField
+                label="Product IDs"
+                render={(record) =>
+                    record.items
+                        ?.map((item) => item.productId)
+                        .join(', ') || 'No Products'
+                }
+            />
             <DateField source="createdAt" label="Created At" />
             <DateField source="updatedAt" label="Updated At" />
         </Datagrid>
