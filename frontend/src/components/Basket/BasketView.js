@@ -48,7 +48,7 @@ const BasketView = () => {
                 </div>
             </div>
 
-            <form className="form-address grid gap-2 grid-cols-2 px-4" onSubmit={handleRecipientRedirect}>
+            <form className="form-address grid gap-2 grid-cols-2 mb-28 px-4" onSubmit={handleRecipientRedirect}>
                 <select
                     className="col-span-2 my-6"
                     name="city"

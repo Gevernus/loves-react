@@ -46,7 +46,7 @@ const RecipientView = () => {
                         <span className="absolute top-1/2 left-0 w-full h-[2px] bg-black transform -translate-y-1/2 -rotate-45"></span>
                     </div>
                 </div>
-                <form className="form-recipient flex flex-col gap-4 w-full mt-8 px-4" onSubmit={handlePaymentRedirect}>
+                <form className="form-recipient flex flex-col gap-4 w-full mt-8 mb-28 px-4" onSubmit={handlePaymentRedirect}>
                     <h2 className="w-full text-lg font-medium text-left">Введите данные получателя</h2>
 
                     <label className="w-full">
