@@ -263,6 +263,7 @@ app.post('/api/create-payment', async (req, res) => {
         const savedOrder = await newOrder.save();
 
         console.log("Order saved:", savedOrder);
+        console.log(authToken);
         console.log(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`);
         // Step 1: Get security token
         const tokenResponse = await fetch(`${PAYKEEPER_CONFIG.baseUrl}/info/settings/token/`, {
