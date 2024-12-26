@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAR } from '../../context/ARContext';
 import { useBanuba } from '../../context/BanubaContext';
 import ColorPalette from './ColorPalette';
@@ -18,17 +18,21 @@ const ARView = () => {
     const arContainerRef = useRef(null);
     const [selectedCategory, setSelectedCategory] = useState(category || 'lips'); // Default category
     const [product, setProduct] = useState(null); // State to store selected product
-    const navigate = useNavigate();
-    const filteredProducts = products?.filter(prod => prod.category === selectedCategory);
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
+    // useEffect(() => {
+    //     // Set the first product of the selected category or handle case when no product is available
+    //     if (filteredProducts?.length > 0) {
+    //         setProduct(filteredProducts[0]);
+    //     } else {
+    //         setProduct(null);
+    //     }
+    // }, [filteredProducts]);
     useEffect(() => {
-        // Set the first product of the selected category or handle case when no product is available
-        if (filteredProducts?.length > 0) {
-            setProduct(filteredProducts[0]);
-        } else {
-            setProduct(null);
-        }
-    }, [filteredProducts]);
+        const newFilteredProducts = products?.filter(prod => prod.category === selectedCategory) || [];
+        setFilteredProducts(newFilteredProducts);
+        setProduct(newFilteredProducts.length > 0 ? newFilteredProducts[0] : null);
+    }, [selectedCategory, products]);
 
     useEffect(() => {
         if (arContainerRef.current) {
@@ -41,12 +45,10 @@ const ARView = () => {
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
-        navigate(`/ar/${e.target.value}`);
     };
 
     // Handle product change
     const handleProductChange = (e) => {
-        console.log(e.target.value);
         const selectedProduct = filteredProducts.find(prod => prod._id === e.target.value);
         console.log(selectedProduct);
         setProduct(selectedProduct);
