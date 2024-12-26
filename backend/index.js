@@ -350,17 +350,6 @@ app.post('/api/create-payment', async (req, res) => {
         } else {
             throw new Error("Payment request failed");
         }
-
-        // Update order with payment details
-        savedOrder.paymentId = invoiceData.invoice_id;
-        savedOrder.paymentUrl = paymentUrl;
-        await savedOrder.save();
-
-        res.json({
-            success: true,
-            order: savedOrder,
-            paymentUrl: paymentUrl
-        });
     } catch (error) {
         console.error("Error creating payment:", error);
         res.status(500).json({

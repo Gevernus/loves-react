@@ -31,9 +31,7 @@ export const OrderList = (props) => (
     <List {...props}>
         <Datagrid rowClick="edit">
             <TextField source="id" label="Order ID" />
-            <ReferenceField source="userId" reference="users" label="User">
-                <TextField source="name" />
-            </ReferenceField>
+            <TextField source="userId" label="User ID" />
             <TextField source="status" />
             <TextField source="total" label="Total Amount" />
             <TextField source="paymentToken" label="Payment Token" />
