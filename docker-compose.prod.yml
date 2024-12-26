@@ -17,7 +17,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
     restart: unless-stopped
-    network_mode: host  # Change to host network
+    networks:
+      - web
 
   mongo:
     image: mongo:latest
@@ -30,7 +31,8 @@ services:
     volumes:
       - mongodb_data:/data/db # Persistent storage for MongoDB data
     restart: unless-stopped
-    network_mode: host  # Change to host network
+    networks:
+      - web
 
   frontend:
     build:
@@ -54,7 +56,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-    network_mode: host  # Change to host network
+    networks:
+      - web
 
   admin:
     build:
@@ -78,7 +81,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-    network_mode: host  # Change to host network
+    networks:
+      - web
 
   backend:
     build:
@@ -100,7 +104,11 @@ services:
       - ./backend:/app
       - /app/node_modules
     restart: unless-stopped
-    network_mode: host  # Change to host network
+    networks:
+      - web
 
+networks:
+  web:
+    driver: bridge
 volumes:
   mongodb_data:
