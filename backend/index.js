@@ -316,7 +316,7 @@ app.post('/api/create-payment', async (req, res) => {
         // // Generate payment URL
         // const paymentUrl = `${PAYKEEPER_CONFIG.baseUrl}/bill/${invoiceData.invoice_id}/`;
 
-        const response = await fetch('http://paykeeper-service:5000/api/paykeeper', {
+        const response = await fetch('http://89.104.69.75:5000/api/paykeeper', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -350,7 +350,7 @@ app.post('/api/create-payment', async (req, res) => {
         } else {
             throw new Error("Payment request failed");
         }
-        
+
         // Update order with payment details
         savedOrder.paymentId = invoiceData.invoice_id;
         savedOrder.paymentUrl = paymentUrl;

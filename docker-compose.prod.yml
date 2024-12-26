@@ -114,6 +114,7 @@ services:
     build:
       context: ./paykeeper-service
       dockerfile: Dockerfile
+    container_name: loves-react-paykeeper
     network_mode: "host"  # Use host network to make external API calls
     environment:
       - NODE_ENV=production

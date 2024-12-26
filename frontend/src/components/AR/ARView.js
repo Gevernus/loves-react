@@ -46,7 +46,9 @@ const ARView = () => {
 
     // Handle product change
     const handleProductChange = (e) => {
+        console.log(e.target.value);
         const selectedProduct = filteredProducts.find(prod => prod.name === e.target.value);
+        console.log(selectedProduct);
         setProduct(selectedProduct);
     };
 
