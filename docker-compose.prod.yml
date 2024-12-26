@@ -102,8 +102,5 @@ services:
     restart: unless-stopped
     network_mode: host  # Change to host network
 
-networks:
-  # No need to define a custom network, since we're using host mode
-
 volumes:
   mongodb_data:
