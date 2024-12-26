@@ -16,6 +16,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
+      - /etc/ssl/certs:/etc/ssl/certs:ro
     restart: unless-stopped
     networks:
       - web
@@ -53,6 +54,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - /etc/ssl/certs:/etc/ssl/certs:ro
     depends_on:
       - backend
     restart: unless-stopped
@@ -103,6 +105,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - /etc/ssl/certs:/etc/ssl/certs:ro
     restart: unless-stopped
     networks:
       - web
