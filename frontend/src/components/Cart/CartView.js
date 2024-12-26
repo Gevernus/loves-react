@@ -55,7 +55,7 @@ const CartView = () => {
             if (data.paymentUrl) {
                 // Redirect to PayKeeper payment page
                 window.location.href = data.paymentUrl;
-                clearCart(); // Clear cart after successful payment initialization
+                // clearCart(); // Clear cart after successful payment initialization
             }
 
         } catch (err) {

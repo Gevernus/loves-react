@@ -47,10 +47,14 @@ const ARView = () => {
     // Handle product change
     const handleProductChange = (e) => {
         console.log(e.target.value);
-        const selectedProduct = filteredProducts.find(prod => prod.name === e.target.value);
+        const selectedProduct = filteredProducts.find(prod => prod._id === e.target.value);
         console.log(selectedProduct);
         setProduct(selectedProduct);
     };
+
+    console.log('Current product:', product);
+    console.log('Current select value:', product?.name);
+    console.log('Filtered products:', filteredProducts);
 
     return (
         <div className="app">
@@ -82,12 +86,12 @@ const ARView = () => {
                         <select
                             id="product-dropdown"
                             className="dropdown"
-                            value={product ? product.name : ''}
+                            value={product ? product._id : ''}
                             onChange={handleProductChange}
                             disabled={!filteredProducts?.length}
                         >
                             {filteredProducts?.map((prod) => (
-                                <option key={prod.name} value={prod.name}>
+                                <option key={prod._id} value={prod._id}>
                                     {prod.name}
                                 </option>
                             ))}
