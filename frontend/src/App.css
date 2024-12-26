@@ -35,7 +35,6 @@ body {
 
 .cart-content {
   max-width: 430px;
-  margin-bottom: 45px;
   display: flex;
   flex-direction: column;
 }

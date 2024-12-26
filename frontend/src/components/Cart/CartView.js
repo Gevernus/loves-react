@@ -94,7 +94,8 @@ const CartView = () => {
             <div className="px-4 py-3 border-b w-full">
                 <h1 className="text-lg font-medium text-center">Моя корзина</h1>
             </div>
-            <div className="cart-content w-full px-2 py-3">
+            <div className="cart-content w-full mb-28  px-2 py-3">
+                {/* Cart Summary */}
                 <div className="px-4 py-2 flex justify-between items-center border-b">
                     <div className="flex items-center gap-2">
                         <span className="text-base font-medium">{getTotalItems()} товара</span>
