@@ -3,7 +3,8 @@ const BANUBA_CLIENT_TOKEN = "Qk5CIJGbG6aC0I304LeJkWSCzzeBIU6ojuul2seF8PlOhcZjRMO
 
 const modulesList = [
     "face_tracker",
-    "lips"
+    "lips",
+    "hair"
 ];
 
 class BanubaService {
