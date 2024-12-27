@@ -33,5 +33,10 @@ export const categories = [
         id: 'care',
         title: 'Уход за AS Hero',
         image: 'care.png',
+    },
+    {
+        id: 'hair',
+        title: 'Волосы',
+        image: 'hair.jpg',
     }
 ];

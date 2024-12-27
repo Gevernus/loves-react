@@ -70,6 +70,7 @@ class BanubaService {
             brows: 'Brows.color',
             eyeshadow: 'Makeup.eyeshadow',
             eyeliner: 'Makeup.eyeliner',
+            hair: 'Hair.color',
             blushes: 'Makeup.blushes',
             lashes: 'Eyelashes.color',
             care: 'Softlight.strength'

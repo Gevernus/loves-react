@@ -8,6 +8,7 @@ export const ARProvider = ({ children }) => {
         browsColor: "0 0 0 0",
         eyeShadow: "0 0 0 0",
         eyeLiner: "0 0 0 0",
+        hair: "0 0 0 0",
         blushes: "0 0 0 0",
         eyeLashes: "0 0 0 0",
         softlight: "0.0"

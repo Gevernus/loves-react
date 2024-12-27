@@ -83,6 +83,7 @@ const ARView = () => {
                             <option value="eyeshadow">Тени</option>
                             <option value="lashes">Ресницы</option>
                             <option value="eyeliner">Подводки</option>
+                            <option value="hair">Волосы</option>
                         </select>
                         <img id="1" className="dropdown-arrow" src="/arrow.png" alt="menu" />
                         <select
