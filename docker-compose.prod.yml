@@ -53,7 +53,6 @@ services:
       - NODE_ENV=production
     volumes:
       - ./frontend:/app
-      - /app/node_modules
       - /etc/ssl/certs:/etc/ssl/certs:ro
     depends_on:
       - backend

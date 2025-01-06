@@ -53,7 +53,6 @@ services:
       - NODE_ENV=development
     volumes:
       - ./frontend:/app
-      - /app/node_modules
     networks:
       - web
     depends_on:

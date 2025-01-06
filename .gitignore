@@ -15,6 +15,7 @@ paykeeper-service/.DS_Store
 paykeeper-service/build
 
 /data
+letsencrypt/acme.json
 
 # misc
 .DS_Store
