@@ -1,9 +1,10 @@
 const SDK_VERSION = "1.16.1";
-const BANUBA_CLIENT_TOKEN = "Qk5CIJGbG6aC0I304LeJkWSCzzeBIU6ojuul2seF8PlOhcZjRMO5Ub2kn95e5+NdrQU7g01AVsNMg7vspCb4y7gS/ymCETZoivri4NKSs4mXhvRz4yQlE1a9sKiJ+OF0xbe6Gumdxy1eePLZXUcuuGD2646GWP3XveG8za/A6ac5XZVrY2iwp+4mz6ZRulDaQTnT9wt+/+ariCRi+xqHYtGhG8PORYIGhoLV7kL04ZS8vyZi3JlXggqVgqC+nhfdEnF/OT3+vhZ3aqNsJyVJ0yRwc1Trz3pdvSenK4jYjNNStmO5UpKjgBuV5VsJpI5hDyqdOKOjq0eJG9z0hCPdXwxCeZXquJtPfcnlxB6Lom+YY9AXcGT0CI234J45rVF7efFlkELyMvYfUYB+/pqt508DXyuvIiccj3NPgaE7OSepC3vk9h9/OMv9t5xEHGkQ4Qtr4bUw9KtEGDLPkKFVJdnkjssO9IcgDD0F30z2Kh3RMhfjXpVlkQBpk1bbrNRs2r7SmhJPPOfXfJqe6CuwAwsMXc8Xonl0dmOMCIHsZEVg7Jdz1U/nyTC2g5N6Y5EFC1ukHi6AZYWKbdJ9fBJznRtmnKeO9juN9/HHpbJ9EkIFsNlGmC53+bCjt6G4Ok5sXQbLudGMvRTgg7hb0BmB7rscNA==";
+const BANUBA_CLIENT_TOKEN = "Qk5CII+SJ3OALjTWuiTWjn2Fnk/Qb0HFr18ARBIk8fM++UUN5GzuqRrNHUDBAaK2a9bWmgQL7WI03XKYaHVeEP/jrge5fNI1srRe9vHdGAJJ7qU7n60fy1vNVK93YRkicI0LzoEEmueKhvDHi6GTEPJ1ohlUNPBt68CFJd2VGHLx5lHOsN+cmoTfTFGQtwvBwu9TzKebOpY/A67K5jD+jL8s7bOe7Pqm+pWX5Uq/8ihgdSC/uoAkWZjcCc7y63thkV5anenzFlftO6mGXw/GtuFhP3qvA6uGDu+8ye6PbjM70wIcrw7jMaXAV6pjcDNC6SCh86sxLgNTmPUwhuA23p7TG0Mv+gTxp5bCfBWYBUL3i+j+Hz/1vZ4VYglvvIlSvZKTIOdi4BbmHqMyFOiLFE2zOjupJr0zg0aIeyXHw9PFzMU5qlvO+mQe3g3GycTRsSA6+O3ksGA0W3LtBUQwvb+1wIBq0w/ODCJnntUJyORXZpgO1cF1WEQZfleg7AZUybeOiDQ3zw/XJTHqucRTypt7BBRUGv512VKV8V++lOWdGb79cyBnaindIHWDKT2ERwL9bBN2up+ZGSFCkutOzZkKq60xOnLfNKiJVMLmXj1NypUBr2i8wtr4+iOH3tQs7Hu2lZZxhLLKlDbpm70mCkKs";
 
 const modulesList = [
     "face_tracker",
-    "lips"
+    "lips",
+    "hair"
 ];
 
 class BanubaService {
@@ -59,10 +60,67 @@ class BanubaService {
         }
     }
 
+    convertColorToNormalized(color) {
+        let r = 0, g = 0, b = 0, a = 1; // Default to black with full opacity
+        if (!color) return color;
+
+        if (color.startsWith("#")) {
+            // Convert HEX format to RGBA
+            if (color.length === 7) {
+                // #RRGGBB
+                r = parseInt(color.slice(1, 3), 16);
+                g = parseInt(color.slice(3, 5), 16);
+                b = parseInt(color.slice(5, 7), 16);
+            } else if (color.length === 4) {
+                // #RGB (short-hand notation)
+                r = parseInt(color[1] + color[1], 16);
+                g = parseInt(color[2] + color[2], 16);
+                b = parseInt(color[3] + color[3], 16);
+            }
+        } else if (color.startsWith("rgba")) {
+            // Extract RGBA values from rgba(R, G, B, A)
+            const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*(\d?.?\d+)?\)/);
+            if (rgbaMatch) {
+                r = parseInt(rgbaMatch[1], 10);
+                g = parseInt(rgbaMatch[2], 10);
+                b = parseInt(rgbaMatch[3], 10);
+                a = rgbaMatch[4] !== undefined ? parseFloat(rgbaMatch[4]) : 1;
+            }
+        } else if (color.startsWith("rgb")) {
+            // Extract RGB values from rgb(R, G, B)
+            const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (rgbMatch) {
+                r = parseInt(rgbMatch[1], 10);
+                g = parseInt(rgbMatch[2], 10);
+                b = parseInt(rgbMatch[3], 10);
+                a = 1; // Fully opaque if no alpha
+            }
+        } else if (/^\d+\s\d+\s\d+(\s\d?.?\d+)?$/.test(color)) {
+            // Parse space-separated format: "R G B A" or "R G B"
+            const parts = color.split(" ");
+            r = parseInt(parts[0], 10);
+            g = parseInt(parts[1], 10);
+            b = parseInt(parts[2], 10);
+            a = parts[3] !== undefined ? parseFloat(parts[3]) : 1;
+        }
+
+        // Normalize each value
+        const rNormalized = (r / 255).toFixed(2);
+        const gNormalized = (g / 255).toFixed(2);
+        const bNormalized = (b / 255).toFixed(2);
+        const aNormalized = a.toFixed(2);
+
+        return `${rNormalized} ${gNormalized} ${bNormalized} ${aNormalized}`;
+    }
+
     setParam(key, value) {
         console.log(`Trying to set param: ${key}:${value}`);
         if (!this.effect || !this.isInitialized) {
             throw new Error('Banuba not initialized');
+        }
+
+        if (key !== 'care') {
+            value = this.convertColorToNormalized(value);
         }
 
         const categoryMapping = {
@@ -70,6 +128,7 @@ class BanubaService {
             brows: 'Brows.color',
             eyeshadow: 'Makeup.eyeshadow',
             eyeliner: 'Makeup.eyeliner',
+            hair: 'Hair.color',
             blushes: 'Makeup.blushes',
             lashes: 'Eyelashes.color',
             care: 'Softlight.strength'
@@ -84,7 +143,7 @@ class BanubaService {
         // Dynamically execute the JavaScript to set the parameter
         const formattedValue = key === 'softlight' ? value || '0.0' : value || '0 0 0 0';
         this.effect.evalJs(`${category}("${formattedValue}")`);
-    }
+    }    
 }
 
 export default new BanubaService();

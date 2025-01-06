@@ -24,12 +24,22 @@ export const ProductProvider = ({ children }) => {
         }
     };
 
+    const getCategoryById = (productId) => {
+        const product = products.find((p) => p.id === productId);
+        if (product) {
+            return product.category || null; // Return the category or null if not available
+        } else {
+            console.warn(`Product with ID ${productId} not found`);
+            return null;
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
     }, []);
 
     return (
-        <ProductContext.Provider value={{ products, loading, refresh: fetchProducts }}>
+        <ProductContext.Provider value={{ products, loading, refresh: fetchProducts, getCategoryById }}>
             {children}
         </ProductContext.Provider>
     );

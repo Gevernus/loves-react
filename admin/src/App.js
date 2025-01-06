@@ -2,6 +2,7 @@ import { Admin, Resource, ListGuesser } from 'react-admin';
 import { dataProvider } from './dataProvider';
 import { ProductList, ProductEdit, ProductCreate } from './components/Products';
 import { UserList, UserEdit } from './components/Users';
+import { OrderList, OrderEdit } from './components/Orders';
 import { Dashboard } from './components/Dashboard';
 
 const App = () => (
@@ -19,6 +20,11 @@ const App = () => (
       name="users"
       list={UserList}
       edit={UserEdit}
+    />
+    <Resource
+      name="orders" // Add orders resource
+      list={OrderList}
+      edit={OrderEdit}
     />
   </Admin>
 );

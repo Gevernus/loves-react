@@ -113,6 +113,10 @@ footer .active {
 }
 
 .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
   width: 100%;
   max-width: 430px;
 }
@@ -335,6 +339,19 @@ footer .active {
 
 .order-button {
   max-width: 430px;
-  width: 100%;  
+  width: 100%;
 }
 
+.logo-header {
+  height: 50px;
+  width: 125px;
+}
+
+.menu-burger {
+  width: 45px;
+  height: 25px;
+}
+
+.loading-logo {
+  max-width: 100%;
+}

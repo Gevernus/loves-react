@@ -6,7 +6,7 @@ services:
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true" 
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=gevernus@mail.ru"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
@@ -16,6 +16,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
+      - /etc/ssl/certs:/etc/ssl/certs:ro
     restart: unless-stopped
     networks:
       - web
@@ -30,10 +31,9 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: GevPass12
     volumes:
       - mongodb_data:/data/db # Persistent storage for MongoDB data
-      # - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js # Run initialization script on startup
+    restart: unless-stopped
     networks:
       - web
-    restart: unless-stopped
 
   frontend:
     build:
@@ -53,12 +53,12 @@ services:
       - NODE_ENV=production
     volumes:
       - ./frontend:/app
-      - /app/node_modules
-    networks:
-      - web
+      - /etc/ssl/certs:/etc/ssl/certs:ro
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - web
 
   admin:
     build:
@@ -79,11 +79,11 @@ services:
     volumes:
       - ./admin:/app
       - /app/node_modules
-    networks:
-      - web
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - web
 
   backend:
     build:
@@ -104,11 +104,25 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+    restart: unless-stopped
     networks:
       - web
+
+  paykeeper-service:
+    build:
+      context: ./paykeeper-service
+      dockerfile: Dockerfile
+    container_name: loves-react-paykeeper
+    network_mode: "host"  # Use host network to make external API calls
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "5000:5000"
     restart: unless-stopped
 
 networks:
   web:
+    driver: bridge
 volumes:
   mongodb_data:

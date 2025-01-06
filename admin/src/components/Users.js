@@ -23,7 +23,7 @@ export const UserList = () => (
             <BooleanField source="checkDecorate" />
             <BooleanField source="checkAccessories" />
             <BooleanField source="checkWeight" />
-            <DateField source="createdAt" />
+            <DateField source="createdAt" showTime={true} />
             <EditButton />
         </Datagrid>
     </List>
