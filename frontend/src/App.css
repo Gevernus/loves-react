@@ -351,3 +351,7 @@ footer .active {
   width: 45px;
   height: 25px;
 }
+
+.loading-logo {
+  max-width: 100%;
+}
