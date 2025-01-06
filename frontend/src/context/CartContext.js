@@ -6,6 +6,7 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
 
     const addToCart = (item) => {
+        console.log(item);
         setCart((prevCart) => {
             const existingItem = prevCart.find(cartItem => cartItem.name === item.name);
             if (existingItem) {

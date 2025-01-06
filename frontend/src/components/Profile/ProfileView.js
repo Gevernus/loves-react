@@ -5,7 +5,7 @@ import Footer from "../Layout/Footer";
 import { useNavigate } from "react-router-dom";
 
 const ProfileView = () => {
-    const { productSets, removeSet, shareSet, selectSet } = useSetContext();
+    const { productSets, removeSet, shareSet, selectSet, buySet } = useSetContext();
     const { products, loading } = useProducts();
     const navigate = useNavigate();
 
@@ -14,15 +14,20 @@ const ProfileView = () => {
     }
 
     const handleRemoveSet = (setId) => {
-        removeSet(setId); // Assuming you have a `removeSet` function in context
+        removeSet(setId); 
     };
 
     const handleShareSet = (setId) => {
-        shareSet(setId); // Assuming you have a `shareSet` function in context
+        shareSet(setId); 
+    };
+
+    const handleBuySet = (setId) => {
+        buySet(setId); 
+        navigate('/cart');        
     };
 
     const handleTrySet = (setId) => {
-        selectSet(setId); // Assuming you have a `trySet` function in context
+        selectSet(setId); 
         navigate("/ar/lips");
     };
 
@@ -90,7 +95,7 @@ const ProfileView = () => {
                                         );
                                     })}
                                 </ul>
-                                <div className="flex gap-2 justify-between mt-2.5">
+                                <div className="flex gap-2 justify-between mt-2.5 text-sm">
                                     <button
                                         onClick={() => handleShareSet(set.id)}
                                         className="bg-[#f468a4] hover:bg-pink-400 text-white rounded-full px-3 py-1"
@@ -102,6 +107,12 @@ const ProfileView = () => {
                                         className="bg-[#f468a4] hover:bg-pink-400 text-white rounded-full px-3 py-1"
                                     >
                                         Примерить
+                                    </button>
+                                    <button
+                                        onClick={() => handleBuySet(set.id)}
+                                        className="bg-[#f468a4] hover:bg-pink-400 text-white rounded-full px-3 py-1"
+                                    >
+                                        Купить
                                     </button>
                                     <button
                                         onClick={() => handleRemoveSet(set.id)}

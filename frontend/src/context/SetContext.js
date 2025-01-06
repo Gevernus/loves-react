@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from './UserContext';
 import { useBanuba } from './BanubaContext';
 import { useProducts } from "./ProductContext";
+import { useCart } from './CartContext';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
@@ -14,7 +15,8 @@ export const SetProvider = ({ children }) => {
     const [productSets, setProductSets] = useState([]);
     const { user } = useUser();
     const { setParam } = useBanuba();
-    const { getCategoryById } = useProducts();
+    const { getCategoryById, getProductById } = useProducts();
+    const { addToCart } = useCart();
 
     useEffect(() => {
         selectedProducts.forEach(({ productId, value }) => {
@@ -88,6 +90,17 @@ export const SetProvider = ({ children }) => {
         }
     };
 
+    const buySet = (setId) => {
+        const foundSet = productSets.find((set) => set.id === setId);
+        if (foundSet) {
+            foundSet.products.forEach((product) => {
+                addToCart(getProductById(product.productId));
+            });
+        } else {
+            console.error(`Set with ID "${setId}" not found`);
+        }
+    };
+
     // Remove a set by ID
     const removeSet = async (setId) => {
         try {
@@ -107,6 +120,7 @@ export const SetProvider = ({ children }) => {
         saveSet,
         selectSet,
         removeSet,
+        buySet,
     };
 
     return <SetContext.Provider value={contextValue}>{children}</SetContext.Provider>;

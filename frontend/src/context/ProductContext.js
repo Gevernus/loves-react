@@ -34,12 +34,16 @@ export const ProductProvider = ({ children }) => {
         }
     };
 
+    const getProductById = (productId) => {
+        return products.find((p) => p.id === productId);
+    };
+
     useEffect(() => {
         fetchProducts();
     }, []);
 
     return (
-        <ProductContext.Provider value={{ products, loading, refresh: fetchProducts, getCategoryById }}>
+        <ProductContext.Provider value={{ products, loading, refresh: fetchProducts, getCategoryById, getProductById }}>
             {children}
         </ProductContext.Provider>
     );
