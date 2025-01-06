@@ -60,10 +60,67 @@ class BanubaService {
         }
     }
 
+    convertColorToNormalized(color) {
+        let r = 0, g = 0, b = 0, a = 1; // Default to black with full opacity
+        if (!color) return color;
+
+        if (color.startsWith("#")) {
+            // Convert HEX format to RGBA
+            if (color.length === 7) {
+                // #RRGGBB
+                r = parseInt(color.slice(1, 3), 16);
+                g = parseInt(color.slice(3, 5), 16);
+                b = parseInt(color.slice(5, 7), 16);
+            } else if (color.length === 4) {
+                // #RGB (short-hand notation)
+                r = parseInt(color[1] + color[1], 16);
+                g = parseInt(color[2] + color[2], 16);
+                b = parseInt(color[3] + color[3], 16);
+            }
+        } else if (color.startsWith("rgba")) {
+            // Extract RGBA values from rgba(R, G, B, A)
+            const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*(\d?.?\d+)?\)/);
+            if (rgbaMatch) {
+                r = parseInt(rgbaMatch[1], 10);
+                g = parseInt(rgbaMatch[2], 10);
+                b = parseInt(rgbaMatch[3], 10);
+                a = rgbaMatch[4] !== undefined ? parseFloat(rgbaMatch[4]) : 1;
+            }
+        } else if (color.startsWith("rgb")) {
+            // Extract RGB values from rgb(R, G, B)
+            const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (rgbMatch) {
+                r = parseInt(rgbMatch[1], 10);
+                g = parseInt(rgbMatch[2], 10);
+                b = parseInt(rgbMatch[3], 10);
+                a = 1; // Fully opaque if no alpha
+            }
+        } else if (/^\d+\s\d+\s\d+(\s\d?.?\d+)?$/.test(color)) {
+            // Parse space-separated format: "R G B A" or "R G B"
+            const parts = color.split(" ");
+            r = parseInt(parts[0], 10);
+            g = parseInt(parts[1], 10);
+            b = parseInt(parts[2], 10);
+            a = parts[3] !== undefined ? parseFloat(parts[3]) : 1;
+        }
+
+        // Normalize each value
+        const rNormalized = (r / 255).toFixed(2);
+        const gNormalized = (g / 255).toFixed(2);
+        const bNormalized = (b / 255).toFixed(2);
+        const aNormalized = a.toFixed(2);
+
+        return `${rNormalized} ${gNormalized} ${bNormalized} ${aNormalized}`;
+    }
+
     setParam(key, value) {
         console.log(`Trying to set param: ${key}:${value}`);
         if (!this.effect || !this.isInitialized) {
             throw new Error('Banuba not initialized');
+        }
+
+        if (key !== 'care') {
+            value = this.convertColorToNormalized(value);
         }
 
         const categoryMapping = {
@@ -86,7 +143,7 @@ class BanubaService {
         // Dynamically execute the JavaScript to set the parameter
         const formattedValue = key === 'softlight' ? value || '0.0' : value || '0 0 0 0';
         this.effect.evalJs(`${category}("${formattedValue}")`);
-    }
+    }    
 }
 
 export default new BanubaService();

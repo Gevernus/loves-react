@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAR } from '../../context/ARContext';
 import { useBanuba } from '../../context/BanubaContext';
 import ColorPalette from './ColorPalette';
 import ProductInfo from './ProductInfo';
@@ -9,25 +8,17 @@ import Footer from '../Layout/Footer';
 import Header from '../Layout/Header';
 
 import { useProducts } from "../../context/ProductContext";
+import SetButton from './SetButton';
 
 const ARView = () => {
     const { category } = useParams();
     const { products } = useProducts();
-    const { params } = useAR();
-    const { dom, player, setParams } = useBanuba();
+    const { dom, player } = useBanuba();
     const arContainerRef = useRef(null);
     const [selectedCategory, setSelectedCategory] = useState(category || 'lips'); // Default category
     const [product, setProduct] = useState(null); // State to store selected product
     const [filteredProducts, setFilteredProducts] = useState([]);
 
-    // useEffect(() => {
-    //     // Set the first product of the selected category or handle case when no product is available
-    //     if (filteredProducts?.length > 0) {
-    //         setProduct(filteredProducts[0]);
-    //     } else {
-    //         setProduct(null);
-    //     }
-    // }, [filteredProducts]);
     useEffect(() => {
         const newFilteredProducts = products?.filter(prod => prod.category === selectedCategory) || [];
         setFilteredProducts(newFilteredProducts);
@@ -37,11 +28,8 @@ const ARView = () => {
     useEffect(() => {
         if (arContainerRef.current) {
             dom.render(player, arContainerRef.current);
-            if (Object.keys(params).length > 0) {
-                // setParams(params);
-            }
         }
-    }, [dom, player, params, setParams]);
+    }, [dom, player]);
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
@@ -50,13 +38,8 @@ const ARView = () => {
     // Handle product change
     const handleProductChange = (e) => {
         const selectedProduct = filteredProducts.find(prod => prod._id === e.target.value);
-        console.log(selectedProduct);
         setProduct(selectedProduct);
     };
-
-    console.log('Current product:', product);
-    console.log('Current select value:', product?.name);
-    console.log('Filtered products:', filteredProducts);
 
     return (
         <div className="app">
@@ -101,6 +84,7 @@ const ARView = () => {
                         </select>
                         <img id="2" className="dropdown-arrow" src="/arrow.png" alt="menu" />
                     </div>
+                    
                     {product ? (
                         <>
                             {product.colors && product.colors.length > 0 ? (
@@ -118,6 +102,7 @@ const ARView = () => {
                     ) : (
                         <p className="text-center text-gray-500">No products available in this category.</p>
                     )}
+                    <SetButton />
                 </div>
 
             </div>

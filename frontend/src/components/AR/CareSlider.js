@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useBanuba } from '../../context/BanubaContext';
+import { useSetContext } from "../../context/SetContext";
 
 const CareSlider = ({ product }) => {
-    const { setParam } = useBanuba();
     const [value, setValue] = useState(0.0);
+    const { toggleProductSelection } = useSetContext();
+
     const handleChange = (event) => {
         setValue(event.target.value);
-        setParam(product.category, event.target.value);
+        toggleProductSelection(product.id, event.target.value);
     };
     return (
         <div id="care-slider" className="slider-section" style={{ display: 'block' }}>

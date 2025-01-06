@@ -95,6 +95,121 @@ userSchema.set("toJSON", {
     virtuals: true,
 });
 
+const setSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    products: [{
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+        value: { type: String, required: true }
+    }],
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
+// Add a virtual field to map `_id` to `id`
+setSchema.virtual("id").get(function () {
+    return this._id.toString();
+});
+
+// Ensure virtuals are included when converting documents to JSON
+setSchema.set("toJSON", {
+    virtuals: true,
+});
+
+// Create the Set model
+const Set = mongoose.model("Set", setSchema);
+
+// Create a new Set
+app.post("/api/sets", async (req, res) => {
+    const { userId, products } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    try {
+        const newSet = new Set({ userId, products });
+        await newSet.save();
+        res.status(201).json(newSet);
+    } catch (error) {
+        console.error("Error creating Set:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Get all Sets
+app.get("/api/sets", async (req, res) => {
+    const { userId } = req.query;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    try {
+        const sets = await Set.find({ userId }); // Populate product details
+        res.json(sets);
+    } catch (error) {
+        console.error("Error retrieving Sets:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Get a specific Set by ID
+app.get("/api/sets/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const set = await Set.findById(id).populate("products.productId");
+        if (set) {
+            res.json(set);
+        } else {
+            res.status(404).json({ error: "Set not found" });
+        }
+    } catch (error) {
+        console.error("Error retrieving Set:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Update a Set by ID
+app.put("/api/sets/:id", async (req, res) => {
+    const { id } = req.params;
+    const { products } = req.body;
+
+    try {
+        const updatedSet = await Set.findByIdAndUpdate(
+            id,
+            { products, updatedAt: new Date() },
+            { new: true, runValidators: true }
+        ).populate("products.productId");
+
+        if (updatedSet) {
+            res.json(updatedSet);
+        } else {
+            res.status(404).json({ error: "Set not found" });
+        }
+    } catch (error) {
+        console.error("Error updating Set:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Delete a Set by ID
+app.delete("/api/sets/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedSet = await Set.findByIdAndDelete(id);
+        if (deletedSet) {
+            res.json({ id });
+        } else {
+            res.status(404).json({ error: "Set not found" });
+        }
+    } catch (error) {
+        console.error("Error deleting Set:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // Эндпоинт для получения всех товаров
 app.get("/api/products", async (req, res) => {
     const products = await Product.find();
