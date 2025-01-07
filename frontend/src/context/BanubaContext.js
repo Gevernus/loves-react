@@ -30,7 +30,8 @@ export const BanubaProvider = ({ children }) => {
             dom,
             player,
             initialize,
-            setParam: (...args) => banubaService.setParam(...args)
+            setParam: (...args) => banubaService.setParam(...args),
+            clear: () => banubaService.clear(),
         }}>
             {children}
         </BanubaContext.Provider>

@@ -3,6 +3,8 @@ import { useUser } from './UserContext';
 import { useBanuba } from './BanubaContext';
 import { useProducts } from "./ProductContext";
 import { useCart } from './CartContext';
+import { useNavigate } from "react-router-dom";
+import WebApp from '@twa-dev/sdk';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
@@ -14,11 +16,13 @@ export const SetProvider = ({ children }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productSets, setProductSets] = useState([]);
     const { user } = useUser();
-    const { setParam } = useBanuba();
+    const { setParam, clear } = useBanuba();
     const { getCategoryById, getProductById } = useProducts();
     const { addToCart } = useCart();
+    const navigate = useNavigate();
 
     useEffect(() => {
+        clear();
         selectedProducts.forEach(({ productId, value }) => {
             const category = getCategoryById(productId); // Replace with your logic
             setParam(category, value);
@@ -41,6 +45,36 @@ export const SetProvider = ({ children }) => {
         };
 
         fetchSets();
+    }, [user]);
+
+    useEffect(() => {
+        const handleStartParam = async () => {
+            const startParam = WebApp.initDataUnsafe?.start_param;
+
+            if (startParam && user) {
+                try {
+                    const response = await fetch(`${apiUrl}/share-links/${startParam}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch share link');
+                    }
+
+                    const data = await response.json();
+                    if (data.selectedProducts && data.selectedProducts.length > 0) {
+                        // Set the selected products
+                        setSelectedProducts(data.selectedProducts);
+
+                        // Get the category of the last product for navigation
+                        const lastProduct = data.selectedProducts[data.selectedProducts.length - 1];
+                        const category = getCategoryById(lastProduct.productId);
+                        navigate(`/ar/${category}`);
+                    }
+                } catch (error) {
+                    console.error('Error processing share link:', error);
+                }
+            }
+        };
+
+        handleStartParam();
     }, [user]);
 
     // Toggle a product's selection status
@@ -90,6 +124,37 @@ export const SetProvider = ({ children }) => {
         }
     };
 
+    const shareSet = async (setId) => {
+        const foundSet = productSets.find((set) => set.id === setId);
+        if (foundSet) {
+            try {
+                const response = await fetch(`${apiUrl}/share-links`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: user._id,
+                        selectedProducts: foundSet.products
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create share link');
+                }
+
+                const data = await response.json();
+
+                // Open the generated Telegram link
+                WebApp.openTelegramLink(data.telegramLink);
+            } catch (error) {
+                console.error('Error sharing set:', error);
+            }
+        } else {
+            console.error(`Set with ID "${setId}" not found`);
+        }
+    };
+
     const buySet = (setId) => {
         const foundSet = productSets.find((set) => set.id === setId);
         if (foundSet) {
@@ -121,6 +186,7 @@ export const SetProvider = ({ children }) => {
         selectSet,
         removeSet,
         buySet,
+        shareSet,
     };
 
     return <SetContext.Provider value={contextValue}>{children}</SetContext.Provider>;

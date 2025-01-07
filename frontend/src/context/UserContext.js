@@ -18,6 +18,7 @@ export const UserProvider = ({ children }) => {
                 const tgUser = WebApp.initDataUnsafe.user || { id: 1, first_name: 'Test', last_name: 'User', username: 'test' };
 
                 if (tgUser) {
+                    const linkHash = WebApp.initDataUnsafe.start_param;
                     // Send user data to the backend
                     // const response = await fetch('https://touch-the-beauty-ai.shop/api/users', {
                     const response = await fetch(`${apiUrl}/users`, {
@@ -30,6 +31,7 @@ export const UserProvider = ({ children }) => {
                             firstName: tgUser.first_name,
                             lastName: tgUser.last_name,
                             username: tgUser.username,
+                            linkHash: linkHash,
                         }),
                     });
 

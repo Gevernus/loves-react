@@ -83,6 +83,11 @@ const userSchema = new mongoose.Schema({
     checkAccessories: { type: Boolean, default: false },
     checkWeight: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
+    referrals: [{
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        createdAt: { type: Date, default: Date.now }
+    }],
+    discount: { type: String, default: '' },
 })
 const User = mongoose.model("User", userSchema);
 
@@ -117,6 +122,80 @@ setSchema.set("toJSON", {
 
 // Create the Set model
 const Set = mongoose.model("Set", setSchema);
+
+const shareLinkSchema = new mongoose.Schema({
+    hash: { type: String, required: true, unique: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    selectedProducts: [{
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        value: String
+    }],
+    createdAt: { type: Date, default: Date.now },
+});
+
+const ShareLink = mongoose.model('ShareLink', shareLinkSchema);
+
+// Generate unique hash
+function generateHash(length = 8) {
+    return crypto.randomBytes(length).toString('hex');
+}
+
+app.post("/api/share-links", async (req, res) => {
+    const { userId, selectedProducts } = req.body;
+
+    try {
+        // Generate unique hash
+        let hash;
+        let isUnique = false;
+        while (!isUnique) {
+            hash = generateHash();
+            const existing = await ShareLink.findOne({ hash });
+            if (!existing) isUnique = true;
+        }
+
+        const shareLink = new ShareLink({
+            hash,
+            userId,
+            selectedProducts,
+        });
+
+        await shareLink.save();
+
+        // Generate Telegram deep link
+        const telegramLink = `https://t.me/Loves_ai_for_you_bot/LoVeS?startapp=${hash}`;
+
+        res.json({
+            hash,
+            telegramLink,
+        });
+    } catch (error) {
+        console.error("Error creating share link:", error);
+        res.status(500).json({ error: "Failed to create share link" });
+    }
+});
+
+// Resolve share link endpoint
+app.get("/api/share-links/:hash", async (req, res) => {
+    const { hash } = req.params;
+
+    try {
+        const shareLink = await ShareLink.findOne({
+            hash,
+        }).populate('userId');
+
+        if (!shareLink) {
+            return res.status(404).json({ error: "Share link not found or expired" });
+        }
+
+        res.json({
+            referrerId: shareLink.userId._id,
+            selectedProducts: shareLink.selectedProducts
+        });
+    } catch (error) {
+        console.error("Error resolving share link:", error);
+        res.status(500).json({ error: "Failed to resolve share link" });
+    }
+});
 
 // Create a new Set
 app.post("/api/sets", async (req, res) => {
@@ -217,16 +296,39 @@ app.get("/api/products", async (req, res) => {
 });
 
 app.post("/api/users", async (req, res) => {
-    const { telegramId, firstName, lastName, username } = req.body;
+    const { telegramId, firstName, lastName, username, linkHash } = req.body;
 
     try {
         // Check if user exists
         let user = await User.findOne({ telegramId });
 
-        // Create user if not found
         if (!user) {
-            user = new User({ telegramId, firstName, lastName, username });
+            // Create new user
+            user = new User({
+                telegramId,
+                firstName,
+                lastName,
+                username,
+            });
             await user.save();
+
+            // Update referrer's referrals array if referral exists
+            if (linkHash) {
+                const shareLink = await ShareLink.findOne({
+                    hash: linkHash,
+                });
+
+                if (shareLink) {
+                    await User.findByIdAndUpdate(shareLink.userId, {
+                        $push: {
+                            referrals: {
+                                userId: user._id,
+                                createdAt: new Date()
+                            }
+                        }
+                    });
+                }
+            }
         }
 
         res.json(user);
@@ -267,6 +369,22 @@ app.patch('/api/users/:id', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
+    }
+});
+
+app.get("/api/users/:userId/referrals", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId)
+            .populate('referrals.userId', 'firstName lastName username');
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json(user.referrals);
+    } catch (error) {
+        console.error("Error fetching referrals:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 

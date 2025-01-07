@@ -12,6 +12,16 @@ class BanubaService {
         this.player = null;
         this.effect = null;
         this.isInitialized = false;
+        this.categoryMapping = {
+            lips: 'Lips.color',
+            brows: 'Brows.color',
+            eyeshadow: 'Makeup.eyeshadow',
+            eyeliner: 'Makeup.eyeliner',
+            hair: 'Hair.color',
+            blushes: 'Makeup.blushes',
+            lashes: 'Eyelashes.color',
+            care: 'Softlight.strength'
+        };
     }
 
     async initialize() {
@@ -123,27 +133,25 @@ class BanubaService {
             value = this.convertColorToNormalized(value);
         }
 
-        const categoryMapping = {
-            lips: 'Lips.color',
-            brows: 'Brows.color',
-            eyeshadow: 'Makeup.eyeshadow',
-            eyeliner: 'Makeup.eyeliner',
-            hair: 'Hair.color',
-            blushes: 'Makeup.blushes',
-            lashes: 'Eyelashes.color',
-            care: 'Softlight.strength'
-        };
-
-        const category = categoryMapping[key];
+        const category = this.categoryMapping[key];
 
         if (!category) {
             return;
         }
 
         // Dynamically execute the JavaScript to set the parameter
-        const formattedValue = key === 'softlight' ? value || '0.0' : value || '0 0 0 0';
+        const formattedValue = key === 'care' ? value || '0.0' : value || '0 0 0 0';
         this.effect.evalJs(`${category}("${formattedValue}")`);
-    }    
+    }
+
+    clear() {
+        if (!this.effect) return;
+        Object.keys(this.categoryMapping).forEach(key => {
+            const category = this.categoryMapping[key];
+            const formattedValue = key === 'care' ? '0.0' : '0 0 0 0';
+            this.effect.evalJs(`${category}("${formattedValue}")`);
+        });
+    }
 }
 
 export default new BanubaService();
