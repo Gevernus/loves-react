@@ -20,6 +20,12 @@ import BonusesView from "./components/Profile/BonusesView";
 
 // This component handles initialization and loading state
 const AppContent = () => {
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+  script.onload = () => {
+    window.eruda.init();
+  };
+  document.body.appendChild(script);
   const { loading: isUserLoading } = useUser();
   const { isInitialized: isBanubaReady, initialize: initializeBanuba } = useBanuba();
   const { loading: isProductLoading } = useProducts();
@@ -29,6 +35,7 @@ const AppContent = () => {
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        
         if (!isBanubaReady) {
           await initializeBanuba();
         }
@@ -37,7 +44,7 @@ const AppContent = () => {
           setAnalyticsReady(true)
           initGA()
         }
-
+        
       } catch (error) {
         console.error('Failed to initialize:', error);
       }
