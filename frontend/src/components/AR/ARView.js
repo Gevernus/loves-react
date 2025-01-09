@@ -18,6 +18,7 @@ const ARView = () => {
     const [selectedCategory, setSelectedCategory] = useState(category || 'lips'); // Default category
     const [product, setProduct] = useState(null); // State to store selected product
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [rendered, setRendered] = useState(false);
 
     useEffect(() => {
         const newFilteredProducts = products?.filter(prod => prod.category === selectedCategory) || [];
@@ -26,8 +27,9 @@ const ARView = () => {
     }, [selectedCategory, products]);
 
     useEffect(() => {
-        if (arContainerRef.current) {
+        if (arContainerRef.current && !rendered) {
             dom.render(player, arContainerRef.current);
+            setRendered(true);
         }
     }, [dom, player]);
 
@@ -84,7 +86,7 @@ const ARView = () => {
                         </select>
                         <img id="2" className="dropdown-arrow" src="/arrow.png" alt="menu" />
                     </div>
-                    
+
                     {product ? (
                         <>
                             {product.colors && product.colors.length > 0 ? (

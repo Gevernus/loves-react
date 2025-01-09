@@ -11,7 +11,6 @@ export const BanubaProvider = ({ children }) => {
     
     const initialize = async () => {
         try {
-            console.log("BanubaInitialize");
             const { Dom, player } = await banubaService.initialize();
             setDom(Dom);
             setPlayer(player);

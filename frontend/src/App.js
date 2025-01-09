@@ -31,6 +31,7 @@ const AppContent = () => {
       try {
         
         if (!isBanubaReady) {
+          console.log('Trying to init banuba');
           await initializeBanuba();
         }
 

@@ -15,9 +15,6 @@ const SetButton = () => {
 
     // Check if the selected products match any set
     const checkIfProductsInSet = () => {
-        console.log("Product Sets:", productSets);
-        console.log("Selected Products:", selectedProducts);
-
         return productSets.find((set) => {
             // Check if lengths match
             if (set.products.length !== selectedProducts.length) {

@@ -25,6 +25,7 @@ class BanubaService {
     }
 
     async initialize() {
+        if (this.isInitialized) return;
         try {
             // const { Dom, Player, Module, Effect, Webcam } = await import(
             //     `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js`
