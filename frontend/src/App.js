@@ -19,13 +19,7 @@ import ProfileView from "./components/Profile/ProfileView";
 import BonusesView from "./components/Profile/BonusesView";
 
 // This component handles initialization and loading state
-const AppContent = () => {
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/eruda';
-  script.onload = () => {
-    window.eruda.init();
-  };
-  document.body.appendChild(script);
+const AppContent = () => {  
   const { loading: isUserLoading } = useUser();
   const { isInitialized: isBanubaReady, initialize: initializeBanuba } = useBanuba();
   const { loading: isProductLoading } = useProducts();
@@ -77,6 +71,12 @@ const AppContent = () => {
 };
 
 const App = () => {
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+  script.onload = () => {
+    window.eruda.init();
+  };
+  document.body.appendChild(script);
   return (
     <Router>
       <UserProvider>
