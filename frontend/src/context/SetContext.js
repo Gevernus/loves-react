@@ -16,7 +16,7 @@ export const SetProvider = ({ children }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productSets, setProductSets] = useState([]);
     const { user } = useUser();
-    const { setParam, clear, isBanubaReady } = useBanuba();
+    const { setParam, clear, isInitialized } = useBanuba();
     const { getCategoryById, getProductById } = useProducts();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -53,7 +53,7 @@ export const SetProvider = ({ children }) => {
             const startParam = WebApp.initDataUnsafe?.start_param;
             console.log("start param", startParam);
             console.log("banuba", isBanubaReady);
-            if (startParam && isBanubaReady) {
+            if (startParam && isInitialized) {
                 try {
                     const response = await fetch(`${apiUrl}/share-links/${startParam}`);
                     if (!response.ok) {
@@ -77,7 +77,7 @@ export const SetProvider = ({ children }) => {
         };
 
         handleStartParam();
-    }, [isBanubaReady]);
+    }, [isInitialized]);
 
     // Toggle a product's selection status
     const toggleProductSelection = (productId, value) => {
