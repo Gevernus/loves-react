@@ -3,7 +3,6 @@ import { useUser } from './UserContext';
 import { useBanuba } from './BanubaContext';
 import { useProducts } from "./ProductContext";
 import { useCart } from './CartContext';
-import { useNavigate } from "react-router-dom";
 import WebApp from '@twa-dev/sdk';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -19,7 +18,6 @@ export const SetProvider = ({ children }) => {
     const { setParam, clear } = useBanuba();
     const { getCategoryById, getProductById } = useProducts();
     const { addToCart } = useCart();
-    const navigate = useNavigate();
 
     useEffect(() => {
         clear();
@@ -157,6 +155,7 @@ export const SetProvider = ({ children }) => {
         removeSet,
         buySet,
         shareSet,
+        setSelectedProducts
     };
 
     return <SetContext.Provider value={contextValue}>{children}</SetContext.Provider>;

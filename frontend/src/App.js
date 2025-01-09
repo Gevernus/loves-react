@@ -7,7 +7,7 @@ import ARView from './components/AR/ARView';
 import LoadingScreen from './components/common/LoadingScreen';
 import { BanubaProvider, useBanuba } from './context/BanubaContext';
 import { ProductProvider, useProducts } from './context/ProductContext';
-import { setSelectedProducts } from './context/SetContext';
+import { useSetContext } from './context/SetContext';
 import { CartProvider } from './context/CartContext';
 import { UserProvider, useUser } from './context/UserContext';
 import { SetProvider } from "./context/SetContext";
@@ -26,6 +26,7 @@ const AppContent = () => {
   const { loading: isUserLoading } = useUser();
   const { isInitialized: isBanubaReady, initialize: initializeBanuba } = useBanuba();
   const { loading: isProductLoading, getCategoryById } = useProducts();
+  const { setSelectedProducts } = useSetContext();
   const [analyticsReady, setAnalyticsReady] = useState(false);
   const location = useLocation()
 
