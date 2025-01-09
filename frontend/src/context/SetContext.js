@@ -52,7 +52,7 @@ export const SetProvider = ({ children }) => {
         const handleStartParam = async () => {
             const startParam = WebApp.initDataUnsafe?.start_param;
             console.log("start param", startParam);
-            console.log("banuba", isBanubaReady);
+            console.log("banuba", isInitialized);
             if (startParam && isInitialized) {
                 try {
                     const response = await fetch(`${apiUrl}/share-links/${startParam}`);
