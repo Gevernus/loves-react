@@ -16,7 +16,7 @@ export const SetProvider = ({ children }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productSets, setProductSets] = useState([]);
     const { user } = useUser();
-    const { setParam, clear, isInitialized } = useBanuba();
+    const { setParam, clear } = useBanuba();
     const { getCategoryById, getProductById } = useProducts();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -45,36 +45,7 @@ export const SetProvider = ({ children }) => {
         };
 
         fetchSets();
-    }, [user]);
-
-    useEffect(() => {
-        const handleStartParam = async () => {
-            const startParam = WebApp.initDataUnsafe?.start_param;
-            if (startParam && isInitialized) {
-                try {
-                    const response = await fetch(`${apiUrl}/share-links/${startParam}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch share link');
-                    }
-
-                    const data = await response.json();
-                    if (data.selectedProducts && data.selectedProducts.length > 0) {
-                        // Set the selected products
-                        setSelectedProducts(data.selectedProducts);
-
-                        // Get the category of the last product for navigation
-                        const lastProduct = data.selectedProducts[data.selectedProducts.length - 1];
-                        const category = getCategoryById(lastProduct.productId);
-                        navigate(`/ar/${category}`);
-                    }
-                } catch (error) {
-                    console.error('Error processing share link:', error);
-                }
-            }
-        };
-
-        handleStartParam();
-    }, [isInitialized]);
+    }, [user]);    
 
     // Toggle a product's selection status
     const toggleProductSelection = (productId, value) => {

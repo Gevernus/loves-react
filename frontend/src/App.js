@@ -19,7 +19,7 @@ import ProfileView from "./components/Profile/ProfileView";
 import BonusesView from "./components/Profile/BonusesView";
 
 // This component handles initialization and loading state
-const AppContent = () => {  
+const AppContent = () => {
   const { loading: isUserLoading } = useUser();
   const { isInitialized: isBanubaReady, initialize: initializeBanuba } = useBanuba();
   const { loading: isProductLoading } = useProducts();
@@ -29,7 +29,7 @@ const AppContent = () => {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        
+
         if (!isBanubaReady) {
           console.log('Trying to init banuba');
           await initializeBanuba();
@@ -39,7 +39,7 @@ const AppContent = () => {
           setAnalyticsReady(true)
           initGA()
         }
-        
+
       } catch (error) {
         console.error('Failed to initialize:', error);
       }
@@ -51,6 +51,36 @@ const AppContent = () => {
   useEffect(() => {
     pageView(location.pathname)
   }, [location])
+
+  useEffect(() => {
+    const handleStartParam = async () => {
+      if (!isBanubaReady) return;
+      const startParam = WebApp.initDataUnsafe?.start_param;
+      if (startParam && isBanubaReady) {
+        try {
+          const response = await fetch(`${apiUrl}/share-links/${startParam}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch share link');
+          }
+
+          const data = await response.json();
+          if (data.selectedProducts && data.selectedProducts.length > 0) {
+            // Set the selected products
+            setSelectedProducts(data.selectedProducts);
+
+            // Get the category of the last product for navigation
+            const lastProduct = data.selectedProducts[data.selectedProducts.length - 1];
+            const category = getCategoryById(lastProduct.productId);
+            navigate(`/ar/${category}`);
+          }
+        } catch (error) {
+          console.error('Error processing share link:', error);
+        }
+      }
+    };
+
+    handleStartParam();
+  }, [isBanubaReady]);
 
   // Show loading screen until both services are ready
   if (isUserLoading || !isBanubaReady || isProductLoading) {
