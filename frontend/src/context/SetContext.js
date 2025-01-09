@@ -48,11 +48,8 @@ export const SetProvider = ({ children }) => {
     }, [user]);
 
     useEffect(() => {
-        console.log("use effect start");
         const handleStartParam = async () => {
             const startParam = WebApp.initDataUnsafe?.start_param;
-            console.log("start param", startParam);
-            console.log("banuba", isInitialized);
             if (startParam && isInitialized) {
                 try {
                     const response = await fetch(`${apiUrl}/share-links/${startParam}`);
