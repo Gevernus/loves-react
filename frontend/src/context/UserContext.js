@@ -80,8 +80,36 @@ export const UserProvider = ({ children }) => {
         }
     };
 
+    const selectReward = async (rewardType, rewardValue) => {
+        if (!user) return;
+
+        try {
+            const response = await fetch(`${apiUrl}/users/${user._id}/select-reward`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rewardType,
+                    rewardValue,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to select reward');
+            }
+
+            const result = await response.json();
+            setUser(result.user);
+            return true;
+        } catch (error) {
+            console.error('Error selecting reward:', error);
+            return false;
+        }
+    };
+
     return (
-        <UserContext.Provider value={{ user, setUser, loading, setOnboarded }}>
+        <UserContext.Provider value={{ user, setUser, loading, setOnboarded, selectReward }}>
             {children}
         </UserContext.Provider>
     );

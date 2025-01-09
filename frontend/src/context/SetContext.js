@@ -146,7 +146,7 @@ export const SetProvider = ({ children }) => {
                 const data = await response.json();
 
                 // Open the generated Telegram link
-                WebApp.openTelegramLink(data.telegramLink);
+                WebApp.openTelegramLink(`https://t.me/share/url?url=${data.telegramLink}`);
             } catch (error) {
                 console.error('Error sharing set:', error);
             }

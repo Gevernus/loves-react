@@ -60,6 +60,7 @@ const orderSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
+orderSchema.index({ userId: 1 });
 
 orderSchema.virtual("id").get(function () {
     return this._id.toString();
@@ -87,8 +88,27 @@ const userSchema = new mongoose.Schema({
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         createdAt: { type: Date, default: Date.now }
     }],
-    discount: { type: String, default: '' },
+    reward: {
+        type: {
+            type: String,
+            default: ''
+        },
+        value: {
+            type: Number,
+            default: 0
+        },
+        claimed: {
+            type: Boolean,
+            default: false
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    },
+    selectedRewards: { type: [String], default: [] },
 })
+userSchema.index({ 'referrals.userId': 1 });
 const User = mongoose.model("User", userSchema);
 
 userSchema.virtual("id").get(function () {
@@ -139,6 +159,137 @@ const ShareLink = mongoose.model('ShareLink', shareLinkSchema);
 function generateHash(length = 8) {
     return crypto.randomBytes(length).toString('hex');
 }
+
+app.get("/api/:userId/level", async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        // Fetch the user by ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Define the referral levels
+        const levels = [
+            { level: 1, referrals: 3, rewards: { permanent: 1, oneTime: 5, cashback: 0.5 } },
+            { level: 2, referrals: 5, rewards: { permanent: 2, oneTime: 10, cashback: 1 } },
+            { level: 3, referrals: 10, rewards: { permanent: 3, oneTime: 15, cashback: 1.5 } },
+            { level: 4, referrals: 20, rewards: { permanent: 4, oneTime: 20, cashback: 2 } },
+            { level: 5, referrals: 40, rewards: { permanent: 5, oneTime: 25, cashback: 2.5 } },
+            { level: 6, referrals: 80, rewards: { permanent: 6, oneTime: 25, cashback: 3 } },
+            { level: 7, referrals: 160, rewards: { permanent: 7, oneTime: 25, cashback: 3.5 } },
+            { level: 8, referrals: 320, rewards: { permanent: 8, oneTime: 25, cashback: 4 } },
+            { level: 9, referrals: 640, rewards: { permanent: 9, oneTime: 25, cashback: 4.5 } },
+            { level: 10, referrals: 1280, rewards: { permanent: 10, oneTime: 25, cashback: 5 } }
+        ];
+
+        // Find the user's level based on the number of referrals
+        const userReferralCount = user.referrals.length;
+        const userLevel = levels.find(level => userReferralCount >= level.referrals);
+
+        // If the user has no level, we still return a 200 status but with empty values
+        if (!userLevel) {
+            return res.status(200).json({
+                level: 0,
+                rewards: {},
+                nextLevelData: levels[0],
+                isRewardsSelected: true
+            });
+        }
+
+        const nextLevelData = (userLevel.level < levels.length) ? levels[userLevel.level] : null;
+        // Get the rewards for the user's level
+        const levelRewards = levels.find(level => level.level === userLevel.level).rewards;
+
+
+        // Check if the user has selected the correct number of rewards for the level
+        const selectedRewardsCount = user.selectedRewards.length;
+
+        // Determine if the user has already selected rewards for this level
+        const isRewardsSelected = selectedRewardsCount >= userLevel.level;
+
+        // Respond with the level and whether rewards are selected
+        res.status(200).json({
+            level: userLevel.level,
+            rewards: levelRewards,
+            nextLevelData,
+            isRewardsSelected: isRewardsSelected
+        });
+
+    } catch (error) {
+        console.error("Error calculating level and checking rewards:", error);
+        res.status(500).json({ error: "Failed to calculate level and check rewards" });
+    }
+});
+
+app.get('/api/:userId/cashback', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const user = await User.findById(userId);
+
+        // Check if user exists
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        if (user.reward.type !== 'cashback') {
+            return res.json({ cashback: 0 }); // Return 0 if not cashback
+        }
+
+        const orders = await Order.aggregate([
+            { $match: { userId: userId, status: 'paid' } }, // Only consider paid orders
+            { $group: { _id: null, totalAmount: { $sum: "$total" } } }
+        ]);
+
+        let cashbackAmount = 0;
+        if (orders.length > 0) {
+            const totalSpent = orders[0].totalAmount; // Get total amount spent by the user
+            cashbackAmount = (user.reward.value / 100) * totalSpent; // Assuming reward.value is a percentage
+        }
+
+        res.json({ cashback: cashbackAmount });
+
+    } catch (error) {
+        console.error("Error calculating cashback:", error);
+        res.status(500).json({ error: "Failed to calculate cashback" });
+    }
+});
+
+app.post("/api/users/:userId/select-reward", async (req, res) => {
+    const { userId } = req.params;
+    const { rewardType, rewardValue } = req.body;
+
+    if (!rewardType || typeof rewardValue !== "number") {
+        return res.status(400).json({ error: "Invalid reward data. Provide rewardType and rewardValue." });
+    }
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Update the reward field
+        user.reward = {
+            type: rewardType,
+            value: rewardValue,
+        };
+        user.selectedRewards.push(rewardType);
+
+        await user.save();
+
+        res.json({
+            user: user,
+        });
+    } catch (error) {
+        console.error("Error selecting reward:", error);
+        res.status(500).json({ error: "Failed to select reward" });
+    }
+});
 
 app.post("/api/share-links", async (req, res) => {
     const { userId, selectedProducts } = req.body;

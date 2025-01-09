@@ -16,6 +16,7 @@ import BasketView from './components/Basket/BasketView';
 import RecipientView from './components/Recipient/RecipientView';
 import PaymentView from './components/Payment/PaymentView';
 import ProfileView from "./components/Profile/ProfileView";
+import BonusesView from "./components/Profile/BonusesView";
 
 // This component handles initialization and loading state
 const AppContent = () => {
@@ -63,7 +64,7 @@ const AppContent = () => {
       <Route path="/recipient" element={<RecipientView />} />
       <Route path="/payment" element={<PaymentView />} />
       <Route path="/my-sets" element={<ProfileView />} />
-      <Route path="/referrals" element={<ProfileView />} />
+      <Route path="/bonuses" element={<BonusesView />} />
     </Routes>
   );
 };

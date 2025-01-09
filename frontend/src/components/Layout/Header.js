@@ -23,10 +23,10 @@ const Header = () => {
                         Мои наборы
                     </button>
                     <button
-                        onClick={() => navigate('/referrals')}
+                        onClick={() => navigate('/bonuses')}
                         className="w-full px-4 py-2 text-left text-m text-gray-700 hover:bg-gray-100"
                     >
-                        Рефералы
+                        Мои бонусы
                     </button>
                 </div>
             )}
