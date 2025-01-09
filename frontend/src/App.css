@@ -111,7 +111,7 @@ footer .active {
 }
 
 #webar canvas {
-  max-height: 50vh;
+  /* max-height: 50vh; */
   overflow: hidden;
 }
 

@@ -52,9 +52,13 @@ class BanubaService {
                     }
                 })
             );
-
+            const width = 1080;
+            const height = 1080;
             // Initialize camera
-            const webcam = new Webcam();
+            const webcam = new Webcam({
+                width,
+                height,
+            });
             this.player.use(webcam);
 
             // Load effect
