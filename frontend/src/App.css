@@ -110,6 +110,11 @@ footer .active {
   width: 100%;
 }
 
+#webar canvas {
+  max-height: 50vh;
+  overflow: hidden;
+}
+
 .container {
   display: flex;
   align-items: center;
