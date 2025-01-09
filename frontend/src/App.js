@@ -58,35 +58,35 @@ const AppContent = () => {
     pageView(location.pathname)
   }, [location])
 
-  // useEffect(() => {
-  //   const handleStartParam = async () => {
-  //     if (!isBanubaReady) return;
-  //     const startParam = WebApp.initDataUnsafe?.start_param;
-  //     if (startParam && isBanubaReady) {
-  //       try {
-  //         const response = await fetch(`${apiUrl}/share-links/${startParam}`);
-  //         if (!response.ok) {
-  //           throw new Error('Failed to fetch share link');
-  //         }
+  useEffect(() => {
+    const handleStartParam = async () => {
+      if (!isBanubaReady) return;
+      const startParam = WebApp.initDataUnsafe?.start_param;
+      if (startParam && isBanubaReady) {
+        try {
+          const response = await fetch(`${apiUrl}/share-links/${startParam}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch share link');
+          }
 
-  //         const data = await response.json();
-  //         if (data.selectedProducts && data.selectedProducts.length > 0) {
-  //           // Set the selected products
-  //           // setSelectedProducts(data.selectedProducts);
+          const data = await response.json();
+          if (data.selectedProducts && data.selectedProducts.length > 0) {
+            // Set the selected products
+            setSelectedProducts(data.selectedProducts);
 
-  //           // Get the category of the last product for navigation
-  //           const lastProduct = data.selectedProducts[data.selectedProducts.length - 1];
-  //           const category = getCategoryById(lastProduct.productId);
-  //           // navigate(`/ar/${category}`);
-  //         }
-  //       } catch (error) {
-  //         console.error('Error processing share link:', error);
-  //       }
-  //     }
-  //   };
+            // Get the category of the last product for navigation
+            const lastProduct = data.selectedProducts[data.selectedProducts.length - 1];
+            const category = getCategoryById(lastProduct.productId);
+            navigate(`/ar/${category}`);
+          }
+        } catch (error) {
+          console.error('Error processing share link:', error);
+        }
+      }
+    };
 
-  //   handleStartParam();
-  // }, [isBanubaReady]);
+    handleStartParam();
+  }, [isBanubaReady]);
 
   // Show loading screen until both services are ready
   if (isUserLoading || !isBanubaReady || isProductLoading) {

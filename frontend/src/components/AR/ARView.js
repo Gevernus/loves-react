@@ -26,8 +26,9 @@ const ARView = () => {
         setProduct(newFilteredProducts.length > 0 ? newFilteredProducts[0] : null);
     }, [selectedCategory, products]);
 
-    useEffect(() => {
+    useEffect(() => {        
         if (arContainerRef.current && !rendered) {
+            console.log('render');
             dom.render(player, arContainerRef.current);
             setRendered(true);
         }
