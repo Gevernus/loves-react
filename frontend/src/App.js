@@ -17,6 +17,8 @@ import RecipientView from './components/Recipient/RecipientView';
 import PaymentView from './components/Payment/PaymentView';
 import ProfileView from "./components/Profile/ProfileView";
 import BonusesView from "./components/Profile/BonusesView";
+import WebApp from '@twa-dev/sdk';
+
 
 // This component handles initialization and loading state
 const AppContent = () => {
