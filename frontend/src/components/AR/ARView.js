@@ -47,7 +47,7 @@ const ARView = () => {
             <div className="ar-content">
                 <div
                     ref={arContainerRef}
-                    className="w-full h-[60vh] bg-gray-100"
+                    className="w-full max-h-[50vh] bg-gray-100"
                     id="webar"
                 />
 
