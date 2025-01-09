@@ -18,11 +18,13 @@ import RecipientView from './components/Recipient/RecipientView';
 import PaymentView from './components/Payment/PaymentView';
 import ProfileView from "./components/Profile/ProfileView";
 import BonusesView from "./components/Profile/BonusesView";
+import { useNavigate } from "react-router-dom";
 import WebApp from '@twa-dev/sdk';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 // This component handles initialization and loading state
 const AppContent = () => {
+  const navigate = useNavigate();
   const { loading: isUserLoading } = useUser();
   const { isInitialized: isBanubaReady, initialize: initializeBanuba } = useBanuba();
   const { loading: isProductLoading, getCategoryById } = useProducts();
