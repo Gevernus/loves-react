@@ -77,7 +77,7 @@ const AppContent = () => {
             // Get the category of the last product for navigation
             const lastProduct = data.selectedProducts[data.selectedProducts.length - 1];
             const category = getCategoryById(lastProduct.productId);
-            navigate(`/ar/${category}`);
+            // navigate(`/ar/${category}`);
           }
         } catch (error) {
           console.error('Error processing share link:', error);
