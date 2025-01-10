@@ -7,6 +7,11 @@ module.exports = {
     extend: {
       colors: {
         bej: '#F7F6F6', // Добавление пользовательского цвета
+        blue: '#021940',
+        seryy: '#ccc',
+        grey: '#969696', 
+        dark_gray: '#5e646e',
+        pink: '#fb2d98',
       },
     },
   },

@@ -1,0 +1,53 @@
+.order-container {
+    height: 90vh;
+    max-width: 430px;
+  }
+
+  .confirm-container {
+    max-width: 430px;
+  }
+
+  .checkbox-order label {
+    position: relative;
+}
+
+.checkbox-order input {
+    display: none;
+}
+
+.checkbox-order label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #FB2D98;
+    border-radius: 4px;
+}
+
+.checkbox-order label::after {
+    content: "";
+    position: absolute;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    top: 5px;
+    left: 5px;
+    width: 10px;
+    height: 6px;
+    border-radius: 1px;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    opacity: 0;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.checkbox-order label:has(input:checked)::after  {
+    opacity: 1;
+}
