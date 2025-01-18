@@ -131,7 +131,8 @@ footer .active {
     /* Stronger top shadow */
     0 4px 10px rgba(0, 0, 0, 0.1);
   /* Bottom shadow */
-  padding: 16px;
+  padding-right: 16px;
+  padding-left: 16px;
   overflow: hidden;
   /* Ensures the border radius works with child elements */
 }
@@ -140,7 +141,6 @@ footer .active {
   display: flex;
   gap: 15px;
   align-items: center;
-  margin-bottom: 10px;
 }
 
 .title {
@@ -157,7 +157,7 @@ footer .active {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 5px;
 }
 
 .color-circle {
