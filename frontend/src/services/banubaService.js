@@ -1,131 +1,81 @@
-// Constants moved to a separate config file for better maintainability
-const CONFIG = {
-    SDK_VERSION: "1.16.1",
-    BANUBA_CLIENT_TOKEN: "Qk5CIFApqZvBZxvc25FAsvs//deRJA1LdWzSRNPF4MCYF6zyxF+I6+4dJomus47rnfTBBDr/pNTTi9ETlIzndZHoOTFBjiPYpHnfSzDQ508o39qqJmBVLJ8oV7dHFuBpq2Os9/1rAQArQRXbMDwCgDXhedcK4GC4YFrQbk/ouGbYZIBjS+tSnWohNPzx2rZceW1cyiRgNg1Jw4zADPH3KRWZ+H21t5w3cgZzTSQ6dKD4ysHKIRoI6/tjWb9v2k/EG5U+9Hnd91cs5hV203PCiTyfcQcuUBQcF5THIuM+hceQVsKSpCPmEJiqE1429NpuqCcZuzQpdoTCRqWYB4pXk4SF316ZQIypiCIMpu3XaF9N6TiP0rB7EziDneZcWMEUY1XqhKOm44/L6oEtdYBP6bPlgdvuIo5msNuS9eexjpIJrhU7AnixLoM5KBr/2OdIEI/kGe41y2k3GtCRhh/gximOT4EvPdn5BU1MQTRnitMJ9EYPHLYnlXYQyQ51w0VqKlRPHUyANeQRFB6+pg6iR7Tk0FalkDCJLoUqsCNMqwdOI1hzGWBrJitIPjrkaf2CeGtP92A5URV4dkI8qRJFYIYbJpv77UKlIYK3rlo0lEAmoe0a8qdywZp1OkiCkQbSTuVyqp67YkyT9M81jSSZ+0U=",
-    BASE_CDN_URL: `https://cdn.jsdelivr.net/npm/@banuba/webar@1.16.1/dist`,
-    MODULES_LIST: ["face_tracker", "lips", "hair"],
-    CATEGORY_MAPPING: {
-        lips: 'Lips.color',
-        brows: 'Brows.color',
-        eyeshadow: 'Makeup.eyeshadow',
-        eyeliner: 'Makeup.eyeliner',
-        hair: 'Hair.color',
-        blushes: 'Makeup.blushes',
-        lashes: 'Eyelashes.color',
-        care: 'Softlight.strength'
-    }
-};
+const SDK_VERSION = "1.16.1";
+const BANUBA_CLIENT_TOKEN = "Qk5CIFApqZvBZxvc25FAsvs//deRJA1LdWzSRNPF4MCYF6zyxF+I6+4dJomus47rnfTBBDr/pNTTi9ETlIzndZHoOTFBjiPYpHnfSzDQ508o39qqJmBVLJ8oV7dHFuBpq2Os9/1rAQArQRXbMDwCgDXhedcK4GC4YFrQbk/ouGbYZIBjS+tSnWohNPzx2rZceW1cyiRgNg1Jw4zADPH3KRWZ+H21t5w3cgZzTSQ6dKD4ysHKIRoI6/tjWb9v2k/EG5U+9Hnd91cs5hV203PCiTyfcQcuUBQcF5THIuM+hceQVsKSpCPmEJiqE1429NpuqCcZuzQpdoTCRqWYB4pXk4SF316ZQIypiCIMpu3XaF9N6TiP0rB7EziDneZcWMEUY1XqhKOm44/L6oEtdYBP6bPlgdvuIo5msNuS9eexjpIJrhU7AnixLoM5KBr/2OdIEI/kGe41y2k3GtCRhh/gximOT4EvPdn5BU1MQTRnitMJ9EYPHLYnlXYQyQ51w0VqKlRPHUyANeQRFB6+pg6iR7Tk0FalkDCJLoUqsCNMqwdOI1hzGWBrJitIPjrkaf2CeGtP92A5URV4dkI8qRJFYIYbJpv77UKlIYK3rlo0lEAmoe0a8qdywZp1OkiCkQbSTuVyqp67YkyT9M81jSSZ+0U=";
+
+const modulesList = [
+    "face_tracker",
+    "lips",
+    "hair"
+];
 
 class BanubaService {
     constructor() {
         this.player = null;
         this.effect = null;
         this.isInitialized = false;
-        this.moduleCache = new Map();
-        this.sdkInstance = null;
-        this.initPromise = null;
+        this.categoryMapping = {
+            lips: 'Lips.color',
+            brows: 'Brows.color',
+            eyeshadow: 'Makeup.eyeshadow',
+            eyeliner: 'Makeup.eyeliner',
+            hair: 'Hair.color',
+            blushes: 'Makeup.blushes',
+            lashes: 'Eyelashes.color',
+            care: 'Softlight.strength'
+        };
     }
 
-    // Implement module caching
-    async loadModule(moduleId) {
-        if (this.moduleCache.has(moduleId)) {
-            return this.moduleCache.get(moduleId);
-        }
-
-        try {
-            const module = await this.sdkInstance.Module.preload(
-                `${CONFIG.BASE_CDN_URL}/modules/${moduleId}.zip`
-            );
-            this.moduleCache.set(moduleId, module);
-            return module;
-        } catch (error) {
-            console.warn(`Failed to load module ${moduleId}:`, error);
-            throw error;
-        }
-    }
-
-    // Implement SDK caching
-    async loadSDK() {
-        if (this.sdkInstance) {
-            return this.sdkInstance;
-        }
-
-        try {
-            // Use dynamic import with local caching
-            const sdk = await eval(
-                `import('${CONFIG.BASE_CDN_URL}/BanubaSDK.browser.esm.min.js')`
-            );
-            this.sdkInstance = sdk;
-            return sdk;
-        } catch (error) {
-            console.error('Failed to load Banuba SDK:', error);
-            throw error;
-        }
-    }
-
-    // Implement singleton pattern for initialization
     async initialize() {
-        if (this.initPromise) {
-            return this.initPromise;
-        }
-
-        this.initPromise = this._initialize();
-        return this.initPromise;
-    }
-
-    async _initialize() {
-        if (this.isInitialized) return { Dom: this.sdkInstance.Dom, player: this.player };
-
+        if (this.isInitialized) return;
         try {
-            const sdk = await this.loadSDK();
-            const { Player, Webcam } = sdk;
+            // const { Dom, Player, Module, Effect, Webcam } = await import(
+            //     `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js`
+            // );
+
+            const { Dom, Player, Module, Effect, Webcam } = await eval(
+                `import('https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js')`
+            );
 
             this.player = await Player.create({
-                clientToken: CONFIG.BANUBA_CLIENT_TOKEN,
-                locateFile: CONFIG.BASE_CDN_URL
+                clientToken: BANUBA_CLIENT_TOKEN,
+                locateFile: `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist`
             });
 
-            // Load and cache modules in parallel
+            // Load all required modules
             await Promise.all(
-                CONFIG.MODULES_LIST.map(async (moduleId) => {
-                    const module = await this.loadModule(moduleId);
-                    await this.player.addModule(module);
+                modulesList.map(async (moduleId) => {
+                    try {
+                        const module = await Module.preload(
+                            `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/modules/${moduleId}.zip`
+                        );
+                        await this.player.addModule(module);
+                    } catch (error) {
+                        console.warn(`Load module ${moduleId} error: `, error);
+                    }
                 })
             );
-
-            // Initialize webcam with optimal settings
-            const webcam = new Webcam({
-                // width: 520,
-                // height: 640,
-                constraints: {
-                    video: {
-                        width: { ideal: 520 },
-                        height: { ideal: 640 },
-                        frameRate: { ideal: 30, max: 30 },
-                        facingMode: 'user',
-                        resizeMode: 'crop-and-scale'
-                    }
-                }
-            });
-
+            const width = 540;
+            const height = 640;
+            // Initialize camera
+            // const webcam = new Webcam({
+            //     width,
+            //     height,
+            // });
+            const webcam = new Webcam();
             this.player.use(webcam);
 
-            // Load and cache effect
-            this.effect = new sdk.Effect('/assets/effects/Makeup_new_morphs.zip');
+            // Load effect
+            this.effect = new Effect('/assets/effects/Makeup_new_morphs.zip');
             await this.player.applyEffect(this.effect);
 
             this.isInitialized = true;
-            return { Dom: sdk.Dom, player: this.player };
+            return { Dom, player: this.player };
 
         } catch (error) {
-            this.initPromise = null; // Reset promise on error
             console.error('Failed to initialize Banuba:', error);
             throw error;
         }
     }
 
-    // Optimized color conversion with memoization
-    #colorCache = new Map();
     convertColorToNormalized(color) {
         let r = 0, g = 0, b = 0, a = 1; // Default to black with full opacity
         if (!color) return color;
@@ -179,49 +129,34 @@ class BanubaService {
         return `${rNormalized} ${gNormalized} ${bNormalized} ${aNormalized}`;
     }
 
-    // Optimized parameter setting with validation
-    async setParam(key, value) {
+    setParam(key, value) {
+        console.log(`Trying to set param: ${key}:${value}`);
         if (!this.effect || !this.isInitialized) {
-            await this.initialize();
+            throw new Error('Banuba not initialized');
         }
 
-        const category = CONFIG.CATEGORY_MAPPING[key];
-        if (!category) return;
+        if (key !== 'care') {
+            value = this.convertColorToNormalized(value);
+        }
 
-        const formattedValue = key === 'care'
-            ? (value || '0.0')
-            : this.convertColorToNormalized(value) || '0 0 0 0';
+        const category = this.categoryMapping[key];
 
-        // Batch multiple parameter updates using requestAnimationFrame
-        requestAnimationFrame(() => {
-            this.effect.evalJs(`${category}("${formattedValue}")`);
-        });
+        if (!category) {
+            return;
+        }
+
+        // Dynamically execute the JavaScript to set the parameter
+        const formattedValue = key === 'care' ? value || '0.0' : value || '0 0 0 0';
+        this.effect.evalJs(`${category}("${formattedValue}")`);
     }
 
-    // Optimized clear method with batched updates
     clear() {
         if (!this.effect) return;
-
-        // Batch all clear operations into a single frame
-        requestAnimationFrame(() => {
-            Object.entries(CONFIG.CATEGORY_MAPPING).forEach(([key, category]) => {
-                const formattedValue = key === 'care' ? '0.0' : '0 0 0 0';
-                this.effect.evalJs(`${category}("${formattedValue}")`);
-            });
+        Object.keys(this.categoryMapping).forEach(key => {
+            const category = this.categoryMapping[key];
+            const formattedValue = key === 'care' ? '0.0' : '0 0 0 0';
+            this.effect.evalJs(`${category}("${formattedValue}")`);
         });
-    }
-
-    // Add cleanup method
-    destroy() {
-        if (this.player) {
-            this.player.destroy();
-        }
-        this.player = null;
-        this.effect = null;
-        this.isInitialized = false;
-        this.moduleCache.clear();
-        this.#colorCache.clear();
-        this.initPromise = null;
     }
 }
 
