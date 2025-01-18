@@ -133,7 +133,10 @@ class BanubaService {
                 })
             );
 
-            const webcam = new Webcam();
+            const webcam = new Webcam({
+                width: '540',
+                height: '620',
+            });
             this.player.use(webcam);
             this.effect = new Effect('/assets/effects/Makeup_new_morphs.zip');
             await this.player.applyEffect(this.effect);
