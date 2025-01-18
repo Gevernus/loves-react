@@ -12,6 +12,8 @@ class BanubaService {
         this.player = null;
         this.effect = null;
         this.isInitialized = false;
+        this.dbName = "BanubaCacheDB";
+        this.storeName = "BanubaModules";
         this.categoryMapping = {
             lips: 'Lips.color',
             brows: 'Brows.color',
@@ -24,52 +26,120 @@ class BanubaService {
         };
     }
 
+    async initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.dbName, 1);
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(this.storeName)) {
+                    db.createObjectStore(this.storeName);
+                }
+            };
+
+            request.onsuccess = () => {
+                resolve(request.result);
+            };
+
+            request.onerror = (error) => {
+                reject(error);
+            };
+        });
+    }
+
+    async saveToDB(key, value) {
+        const db = await this.initDB();
+        const transaction = db.transaction(this.storeName, "readwrite");
+        const store = transaction.objectStore(this.storeName);
+        store.put(value, key);
+    }
+
+    async getFromDB(key) {
+        const db = await this.initDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(this.storeName, "readonly");
+            const store = transaction.objectStore(this.storeName);
+            const request = store.get(key);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (error) => reject(error);
+        });
+    }
+
+    async cacheSDKFiles() {
+        const sdkUrl = `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js`;
+
+        try {
+            const response = await fetch(sdkUrl);
+            if (response.ok) {
+                const jsText = await response.text(); // Read JS as text
+                await this.saveToDB(sdkUrl, jsText); // Store as text
+                console.log(`Cached SDK as text`);
+            }
+        } catch (error) {
+            console.error("Failed to cache SDK:", error);
+        }
+    }
+
+    async loadSDKFromCache() {
+        const sdkUrl = `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js`;
+
+        try {
+            const jsText = await this.getFromDB(sdkUrl);
+            if (jsText) {
+                const sdkModule = eval(jsText); // Execute JavaScript directly
+                return sdkModule;
+            }
+            return null;
+        } catch (error) {
+            console.error("Failed to load SDK from cache:", error);
+            return null;
+        }
+    }
+
     async initialize() {
         if (this.isInitialized) return;
         try {
-            // const { Dom, Player, Module, Effect, Webcam } = await import(
-            //     `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js`
-            // );
+            // let sdkModules = await this.loadSDKFromCache();
+            let sdkModules = [];
+            if (!false) {
+                sdkModules = await eval(
+                    `import('https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js')`
+                );
+                await this.cacheSDKFiles();
+            }
 
-            const { Dom, Player, Module, Effect, Webcam } = await eval(
-                `import('https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/BanubaSDK.browser.esm.min.js')`
-            );
+            const { Dom, Player, Module, Effect, Webcam } = sdkModules;
 
             this.player = await Player.create({
                 clientToken: BANUBA_CLIENT_TOKEN,
                 locateFile: `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist`
             });
 
-            // Load all required modules
             await Promise.all(
                 modulesList.map(async (moduleId) => {
                     try {
-                        const module = await Module.preload(
-                            `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/modules/${moduleId}.zip`
-                        );
+                        const moduleUrl = `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist/modules/${moduleId}.zip`;
+                        let moduleBlob = await this.getFromDB(moduleUrl);
+                        if (!moduleBlob) {
+                            const response = await fetch(moduleUrl);
+                            moduleBlob = await response.blob();
+                            await this.saveToDB(moduleUrl, moduleBlob);
+                        }
+                        const module = await Module.preload(moduleBlob);
                         await this.player.addModule(module);
                     } catch (error) {
                         console.warn(`Load module ${moduleId} error: `, error);
                     }
                 })
             );
-            const width = 540;
-            const height = 640;
-            // Initialize camera
-            // const webcam = new Webcam({
-            //     width,
-            //     height,
-            // });
+
             const webcam = new Webcam();
             this.player.use(webcam);
-
-            // Load effect
             this.effect = new Effect('/assets/effects/Makeup_new_morphs.zip');
             await this.player.applyEffect(this.effect);
 
             this.isInitialized = true;
             return { Dom, player: this.player };
-
         } catch (error) {
             console.error('Failed to initialize Banuba:', error);
             throw error;
