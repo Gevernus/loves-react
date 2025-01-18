@@ -132,10 +132,27 @@ class BanubaService {
                     }
                 })
             );
-
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            }).then(stream => {
+                const track = stream.getVideoTracks()[0];
+                const settings = track.getSettings();
+                console.log("Actual Resolution:", settings.width, "x", settings.height);
+            });
             const webcam = new Webcam({
-                width: '540',
-                height: '620',
+                width: {
+                    min: 640,
+                    ideal: 640,
+                    max: 640
+                },
+                height: {
+                    min: 480,
+                    ideal: 480,
+                    max: 480
+                }
             });
             this.player.use(webcam);
             this.effect = new Effect('/assets/effects/Makeup_new_morphs.zip');
