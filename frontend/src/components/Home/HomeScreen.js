@@ -15,15 +15,17 @@ const HomeScreen = () => {
     return (
         <div className="app">
             <Header />
-            <div className="content">
-                {categories.map((category) => (
-                    <CategoryCard
-                        key={category.id}
-                        id={category.id}
-                        title={category.title}
-                        image={category.image}
-                    />
-                ))}
+            <div className="max-w-7xl mx-auto px-4 mb-[65px]">
+                <div className="grid grid-cols-2 gap-6">
+                    {categories.map((category) => (
+                        <CategoryCard
+                            key={category.id}
+                            id={category.id}
+                            title={category.title}
+                            image={category.image}
+                        />
+                    ))}
+                </div>
             </div>
             <Footer />
         </div>
