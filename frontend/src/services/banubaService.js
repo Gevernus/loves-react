@@ -95,8 +95,8 @@ class BanubaService {
 
             // Initialize webcam with optimal settings
             const webcam = new Webcam({
-                width: 520,
-                height: 640,
+                // width: 520,
+                // height: 640,
                 constraints: {
                     video: {
                         width: { ideal: 520 },
