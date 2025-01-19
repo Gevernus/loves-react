@@ -52,8 +52,6 @@ services:
       - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api
       - NODE_ENV=production
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
       - /etc/ssl/certs:/etc/ssl/certs:ro
     depends_on:
       - backend

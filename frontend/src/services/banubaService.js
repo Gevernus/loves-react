@@ -132,16 +132,7 @@ class BanubaService {
                     }
                 })
             );
-            navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: { ideal: 640 },
-                    height: { ideal: 480 }
-                }
-            }).then(stream => {
-                const track = stream.getVideoTracks()[0];
-                const settings = track.getSettings();
-                console.log("Actual Resolution:", settings.width, "x", settings.height);
-            });
+            
             const webcam = new Webcam({
                 width: {
                     min: 640,
