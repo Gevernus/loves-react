@@ -1,22 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
 import { useBanuba } from '../../context/BanubaContext';
 import ColorPalette from './ColorPalette';
 import ProductInfo from './ProductInfo';
 import CareSlider from './CareSlider';
 import Footer from '../Layout/Footer';
 import Header from '../Layout/Header';
-
 import { useProducts } from "../../context/ProductContext";
 import SetButton from './SetButton';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 const ARView = () => {
     const { category } = useParams();
     const { products } = useProducts();
     const { dom, player } = useBanuba();
     const arContainerRef = useRef(null);
-    const [selectedCategory, setSelectedCategory] = useState(category || 'lips'); // Default category
-    const [product, setProduct] = useState(null); // State to store selected product
+    const [selectedCategory, setSelectedCategory] = useState(category || 'lips');
+    const [product, setProduct] = useState(null);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [rendered, setRendered] = useState(false);
 
@@ -26,7 +31,7 @@ const ARView = () => {
         setProduct(newFilteredProducts.length > 0 ? newFilteredProducts[0] : null);
     }, [selectedCategory, products]);
 
-    useEffect(() => {        
+    useEffect(() => {
         if (arContainerRef.current && !rendered) {
             console.log('render');
             dom.render(player, arContainerRef.current);
@@ -38,9 +43,8 @@ const ARView = () => {
         setSelectedCategory(e.target.value);
     };
 
-    // Handle product change
-    const handleProductChange = (e) => {
-        const selectedProduct = filteredProducts.find(prod => prod._id === e.target.value);
+    const handleSlideChange = (swiper) => {
+        const selectedProduct = filteredProducts[swiper.activeIndex];
         setProduct(selectedProduct);
     };
 
@@ -72,42 +76,51 @@ const ARView = () => {
                             <option value="hair">Волосы</option>
                         </select>
                         <img id="1" className="dropdown-arrow" src="/arrow.png" alt="menu" />
-                        <select
-                            id="product-dropdown"
-                            className="dropdown"
-                            value={product ? product._id : ''}
-                            onChange={handleProductChange}
-                            disabled={!filteredProducts?.length}
-                        >
-                            {filteredProducts?.map((prod) => (
-                                <option key={prod._id} value={prod._id}>
-                                    {prod.name}
-                                </option>
-                            ))}
-                        </select>
-                        <img id="2" className="dropdown-arrow" src="/arrow.png" alt="menu" />
                     </div>
 
-                    {product ? (
-                        <>
-                            {product.colors && product.colors.length > 0 ? (
-                                <>
-                                    <ColorPalette product={product} />
-                                    <ProductInfo product={product} />
-                                </>
-                            ) : (
-                                <>
-                                    <CareSlider product={product} />
-                                    <ProductInfo product={product} />
-                                </>
-                            )}
-                        </>
+                    {filteredProducts.length > 0 ? (
+                        <div className="product-swiper-container">
+                            <Swiper
+                                modules={[Navigation]}
+                                navigation={{
+                                    nextEl: '.swiper-button-next-custom',
+                                    prevEl: '.swiper-button-prev-custom',
+                                }}
+                                spaceBetween={0}
+                                slidesPerView={1}
+                                onSlideChange={handleSlideChange}
+                                className="product-info-swiper"
+                            >
+                                {filteredProducts.map((prod) => (
+                                    <SwiperSlide key={prod._id}>
+                                        <div className="product-card">
+                                            {prod.colors && prod.colors.length > 0 ? (
+                                                <>
+                                                    <ColorPalette product={prod} />
+                                                    <ProductInfo product={prod} />
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <CareSlider product={prod} />
+                                                    <ProductInfo product={prod} />
+                                                </>
+                                            )}
+                                        </div>
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                            <div className="swiper-button-prev-custom">
+                                <img src="/arrow-left.png" alt="Previous" />
+                            </div>
+                            <div className="swiper-button-next-custom">
+                                <img src="/arrow-right.png" alt="Next" />
+                            </div>
+                        </div>
                     ) : (
                         <p className="text-center text-gray-500">No products available in this category.</p>
                     )}
                     <SetButton />
                 </div>
-
             </div>
             <Footer />
         </div>

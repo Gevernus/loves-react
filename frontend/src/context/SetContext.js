@@ -48,20 +48,22 @@ export const SetProvider = ({ children }) => {
     // Toggle a product's selection status
     const toggleProductSelection = (productId, value) => {
         setSelectedProducts((prevSelected) => {
-            const existingProduct = prevSelected.find((p) => p.productId === productId);
+            // Get the category of the current product:
+            const newProductCategoryId = getCategoryById(productId);
 
+            // 1. Remove any product from the same category:
+            const updatedProducts = prevSelected.filter((p) => {
+                const existingCategoryId = getCategoryById(p.productId);
+                return existingCategoryId !== newProductCategoryId;
+            });
+
+            // 2. If value is null, we're simply removing (unselecting):
             if (value === null) {
-                // If value is null, remove the product
-                return prevSelected.filter((p) => p.productId !== productId);
-            } else if (existingProduct) {
-                // If the product exists, update its value
-                return prevSelected.map((p) =>
-                    p.productId === productId ? { ...p, value } : p
-                );
-            } else {
-                // If the product does not exist, add it
-                return [...prevSelected, { productId, value }];
+                return updatedProducts;
             }
+
+            // 3. Otherwise, add the new product:
+            return [...updatedProducts, { productId, value }];
         });
     };
 

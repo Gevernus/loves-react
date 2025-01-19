@@ -135,6 +135,7 @@ footer .active {
   padding-left: 16px;
   overflow: hidden;
   /* Ensures the border radius works with child elements */
+  margin-bottom: 20px;
 }
 
 .header {
@@ -304,6 +305,7 @@ footer .active {
   /* Make it clear it's clickable */
   width: 150px;
   /* Allow the size to fit content */
+  margin-left: 10px;
 }
 
 .slider-section {
@@ -357,4 +359,61 @@ footer .active {
 
 .loading-logo {
   max-width: 100%;
+}
+
+.product-swiper-container {
+  position: relative;
+  padding: 0 20px;
+  /* Make room for navigation arrows */
+}
+
+.product-card {
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 10px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom navigation buttons */
+.swiper-button-next-custom,
+.swiper-button-prev-custom {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-button-prev-custom {
+  left: 0;
+}
+
+.swiper-button-next-custom {
+  right: 0;
+}
+
+.swiper-button-next-custom img,
+.swiper-button-prev-custom img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Hide default Swiper navigation */
+.swiper-button-next,
+.swiper-button-prev {
+  display: none;
+}
+
+.product-info-swiper {
+  width: 100%;
+}
+
+.swiper-slide {
+  width: 100%;
 }
