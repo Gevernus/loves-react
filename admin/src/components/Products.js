@@ -11,13 +11,15 @@ import {
     NumberInput,
     ArrayInput,
     SimpleFormIterator,
-    ImageField,
-    ImageInput,
 } from 'react-admin';
+import ProductBulkActionButtons from './ProductBulkActionButtons';
 
 export const ProductList = () => (
     <List>
-        <Datagrid>
+        <Datagrid
+            rowClick="edit"
+            bulkActionButtons={<ProductBulkActionButtons />}
+        >
             <TextField source="name" />
             <NumberField source="price" />
             <TextField source="category" />
