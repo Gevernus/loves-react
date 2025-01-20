@@ -243,8 +243,14 @@ class BanubaService {
             throw new Error('Banuba not initialized');
         }
         try {
+            const photoSettings = {
+                width: 640, // Adjust for optimal size (1024+ for high quality)
+                height: 480, // Keep aspect ratio
+                quality: 0.7, // 85% quality (good balance)
+                // type: "image/webp" // WEBP is the most efficient format
+            };
             // ImageCapture.takePhoto() returns a Blob in newer browsers
-            const photoBlob = await this.imageCapture.takePhoto();
+            const photoBlob = await this.imageCapture.takePhoto(photoSettings);
 
             // Convert Blob to base64 data URL
             const base64DataUrl = await this.blobToBase64(photoBlob);
