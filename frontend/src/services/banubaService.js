@@ -244,18 +244,10 @@ class BanubaService {
         }
         try {
             const photoSettings = {
-                width: 640, // Adjust for optimal size (1024+ for high quality)
-                height: 480, // Keep aspect ratio
-                quality: 0.7, // 85% quality (good balance)
-                // type: "image/webp" // WEBP is the most efficient format
+                quality: 0.7, // 70% quality (good balance)
             };
             // ImageCapture.takePhoto() returns a Blob in newer browsers
             const photoBlob = await this.imageCapture.takePhoto(photoSettings);
-
-            // Convert Blob to base64 data URL
-            // const base64DataUrl = await this.blobToBase64(photoBlob);
-
-            // base64DataUrl looks like "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
             return photoBlob;
         } catch (error) {
             console.error('Failed to capture photo:', error);

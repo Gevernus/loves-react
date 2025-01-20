@@ -52,6 +52,11 @@ export const UserEdit = () => (
             <TextInput source="lastName" />
             <TextInput source="username" />
 
+            {/* Photo Section */}
+            <TitlePortal>Profile Photo</TitlePortal>
+            <ImageField source="photo.url" label="Current Photo" />
+            <TextInput source="photo.url" label="Photo URL (Clear to remove)" resettable />
+
             {/* Checkboxes Section */}
             <TitlePortal>Status</TitlePortal>
             <BooleanInput source="isOnboarded" />
