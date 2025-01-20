@@ -5,6 +5,7 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const bodyParser = require("body-parser");
 const crypto = require('crypto');
+const streamifier = require('streamifier');
 
 const app = express();
 app.use(cors({
