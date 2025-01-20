@@ -5,6 +5,7 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const bodyParser = require("body-parser");
 const crypto = require('crypto');
+const streamifier = require('streamifier');
 
 const app = express();
 app.use(cors({
@@ -97,7 +98,7 @@ const userSchema = new mongoose.Schema({
     checkWeight: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     photo: {
-        url: { type: String }, 
+        url: { type: String },
         uploadedAt: { type: Date, default: Date.now }
     },
     referrals: [{
@@ -175,37 +176,6 @@ const ShareLink = mongoose.model('ShareLink', shareLinkSchema);
 function generateHash(length = 8) {
     return crypto.randomBytes(length).toString('hex');
 }
-
-app.post('/api/:userId/upload-photo', upload.single('photo'), async (req, res) => {
-    try {
-        const { userId } = req.params;
-        if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded" });
-        }
-
-        // Convert buffer to base64 and upload to Cloudinary
-        const fileBuffer = req.file.buffer.toString('base64');
-
-        const result = await cloudinary.uploader.upload(`data:image/jpeg;base64,${fileBuffer}`, {
-            folder: 'user-photos',
-        });
-
-        // Update user with Cloudinary image URL
-        const updatedUser = await User.findOneAndUpdate(
-            { _id: userId },
-            {
-                'photo.url': result.secure_url,
-                'photo.uploadedAt': new Date()
-            },
-            { new: true }
-        );
-
-        res.json(updatedUser);
-    } catch (error) {
-        console.error('Upload error:', error);
-        res.status(500).json({ error: 'Upload failed' });
-    }
-});
 
 app.get("/api/:userId/level", async (req, res) => {
     const { userId } = req.params;
@@ -538,15 +508,16 @@ app.post("/api/users", async (req, res) => {
 
 app.patch('/api/users/:id', async (req, res) => {
     const { id } = req.params;
-    const updates = {
-        isOnboarded,
-        checkAccessories,
-        checkCare,
-        checkDecorate,
-        checkWeight
-    } = req.body;
+    const { isOnboarded, checkAccessories, checkCare, checkDecorate, checkWeight, photo } = req.body;
 
     try {
+        let updates = { isOnboarded, checkAccessories, checkCare, checkDecorate, checkWeight };
+
+        // ✅ Only update photo if it exists in request
+        if (photo && photo.url) {
+            updates["photo.url"] = photo.url;
+            updates["photo.uploadedAt"] = photo.uploadedAt || new Date();
+        }
         Object.keys(updates).forEach(key =>
             updates[key] === undefined && delete updates[key]
         );

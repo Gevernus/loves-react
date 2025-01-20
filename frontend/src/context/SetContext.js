@@ -13,6 +13,7 @@ export const useSetContext = () => useContext(SetContext);
 
 export const SetProvider = ({ children }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const [productSets, setProductSets] = useState([]);
     const { user, setUser } = useUser();
     const { setParam, clear, takePhoto } = useBanuba();
@@ -45,6 +46,25 @@ export const SetProvider = ({ children }) => {
         fetchSets();
     }, [user]);
 
+    async function uploadToCloudinary(photoBlob) {
+        const formData = new FormData();
+        formData.append("file", photoBlob);
+        formData.append("upload_preset", "default");
+
+        const response = await fetch("https://api.cloudinary.com/v1_1/dm31xhpot/image/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.secure_url) {
+            console.log("Uploaded successfully:", data.secure_url);
+            return data.secure_url;
+        } else {
+            throw new Error("Upload failed");
+        }
+    }
+
     // Toggle a product's selection status
     const toggleProductSelection = async (productId, value) => {
         setSelectedProducts((prevSelected) => {
@@ -65,27 +85,30 @@ export const SetProvider = ({ children }) => {
             // 3. Otherwise, add the new product:
             return [...updatedProducts, { productId, value }];
         });
-        if (!user.photo?.url) {
+        if (!user.photo?.url && !isUploadingPhoto) {
+            setIsUploadingPhoto(true); // ✅ Lock upload process
             try {
-                const photoBlob = await takePhoto(); // Assume takePhoto() returns a Blob
+                const photoBlob = await takePhoto(); // Capture photo
+                const photoUrl = await uploadToCloudinary(photoBlob);
 
-                const formData = new FormData();
-                formData.append('photo', photoBlob, "user_photo.jpg");
-                
-                const response = await fetch(`${apiUrl}/${user._id}/upload-photo`, {
-                    method: 'POST',
-                    body: formData, 
+                // ✅ Send API request to update user with photo URL
+                const payload = { photo: { url: photoUrl, uploadedAt: new Date() } };
+                const response = await fetch(`${apiUrl}/users/${user._id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to upload photo and update user');
+                if (response.ok) {
+                    const updatedUser = await response.json();
+                    setUser(updatedUser);
+                } else {
+                    console.error("Failed to update user:", response.statusText);
                 }
-
-                const updatedUser = await response.json();
-                setUser(updatedUser);
             } catch (error) {
-                console.error('Error handling photo:', error);
-                return;
+                console.error("Error handling photo:", error);
+            } finally {
+                setIsUploadingPhoto(false); // ✅ Unlock upload process
             }
         }
     };
