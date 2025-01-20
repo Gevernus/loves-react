@@ -9,7 +9,8 @@ const app = express();
 app.use(cors({
     exposedHeaders: ['Content-Range']
 }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 const cloudinary = require('cloudinary').v2;
 
