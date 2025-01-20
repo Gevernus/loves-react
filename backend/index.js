@@ -1,24 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const multer = require('multer');
-const cloudinary = require('cloudinary').v2;
 const bodyParser = require("body-parser");
 const crypto = require('crypto');
-const streamifier = require('streamifier');
 
 const app = express();
 app.use(cors({
     exposedHeaders: ['Content-Range']
 }));
 app.use(bodyParser.json());
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
-const upload = multer({ storage: multer.memoryStorage() });
 
 const mongoUri = process.env.MONGO_URI || "mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin";
 
@@ -514,7 +504,10 @@ app.patch('/api/users/:id', async (req, res) => {
         let updates = { isOnboarded, checkAccessories, checkCare, checkDecorate, checkWeight };
 
         // ✅ Only update photo if it exists in request
-        if (photo && photo.url) {
+        if (photo?.url === "") {
+            updates["photo.url"] = null;
+            updates["photo.uploadedAt"] = null;
+        } else if (photo?.url) {
             updates["photo.url"] = photo.url;
             updates["photo.uploadedAt"] = photo.uploadedAt || new Date();
         }
