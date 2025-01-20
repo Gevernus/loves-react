@@ -183,27 +183,34 @@ app.post('/api/:userId/upload-photo', upload.single('photo'), async (req, res) =
             return res.status(400).json({ error: "No file uploaded" });
         }
 
-        // Convert buffer to base64 and upload to Cloudinary
-        const fileBuffer = req.file.buffer.toString('base64');
+        // Upload buffer directly to Cloudinary using a stream
+        const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: "user-photos" },
+            async (error, result) => {
+                if (error) {
+                    console.error("Cloudinary Upload Error:", error);
+                    return res.status(500).json({ error: "Upload to Cloudinary failed" });
+                }
 
-        const result = await cloudinary.uploader.upload(`data:image/jpeg;base64,${fileBuffer}`, {
-            folder: 'user-photos',
-        });
+                // Update user with Cloudinary image URL
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: userId },
+                    {
+                        'photo.url': result.secure_url,
+                        'photo.uploadedAt': new Date()
+                    },
+                    { new: true }
+                );
 
-        // Update user with Cloudinary image URL
-        const updatedUser = await User.findOneAndUpdate(
-            { _id: userId },
-            {
-                'photo.url': result.secure_url,
-                'photo.uploadedAt': new Date()
-            },
-            { new: true }
+                res.json(updatedUser);
+            }
         );
 
-        res.json(updatedUser);
+        // Stream the file buffer to Cloudinary
+        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
     } catch (error) {
-        console.error('Upload error:', error);
-        res.status(500).json({ error: 'Upload failed' });
+        console.error("Upload error:", error);
+        res.status(500).json({ error: "Upload failed" });
     }
 });
 
