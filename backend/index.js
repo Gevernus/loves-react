@@ -1,24 +1,23 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 const bodyParser = require("body-parser");
 const crypto = require('crypto');
-const { url } = require("inspector");
 
 const app = express();
 app.use(cors({
     exposedHeaders: ['Content-Range']
 }));
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
-
-const cloudinary = require('cloudinary').v2;
+app.use(bodyParser.json());
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
+const upload = multer({ storage: multer.memoryStorage() });
 
 const mongoUri = process.env.MONGO_URI || "mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin";
 
@@ -177,24 +176,28 @@ function generateHash(length = 8) {
     return crypto.randomBytes(length).toString('hex');
 }
 
-app.post('/api/:userId/upload-photo', async (req, res) => {
+app.post('/api/:userId/upload-photo', upload.single('photo'), async (req, res) => {
     try {
         const { userId } = req.params;
-        const { photo } = req.body; // base64 string
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
 
-        // Upload to cloudinary directly
-        const result = await cloudinary.uploader.upload(photo, {
+        // Convert buffer to base64 and upload to Cloudinary
+        const fileBuffer = req.file.buffer.toString('base64');
+
+        const result = await cloudinary.uploader.upload(`data:image/jpeg;base64,${fileBuffer}`, {
             folder: 'user-photos',
         });
 
-        // Update user with photo URL and return the updated user
+        // Update user with Cloudinary image URL
         const updatedUser = await User.findOneAndUpdate(
             { _id: userId },
             {
                 'photo.url': result.secure_url,
                 'photo.uploadedAt': new Date()
             },
-            { new: true } // This option returns the updated document
+            { new: true }
         );
 
         res.json(updatedUser);

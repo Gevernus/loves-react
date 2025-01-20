@@ -253,10 +253,10 @@ class BanubaService {
             const photoBlob = await this.imageCapture.takePhoto(photoSettings);
 
             // Convert Blob to base64 data URL
-            const base64DataUrl = await this.blobToBase64(photoBlob);
+            // const base64DataUrl = await this.blobToBase64(photoBlob);
 
             // base64DataUrl looks like "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
-            return base64DataUrl;
+            return photoBlob;
         } catch (error) {
             console.error('Failed to capture photo:', error);
             throw error;

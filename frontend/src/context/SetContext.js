@@ -67,16 +67,14 @@ export const SetProvider = ({ children }) => {
         });
         if (!user.photo?.url) {
             try {
-                // Take photo using Banuba
-                const photoBase64 = await takePhoto();
+                const photoBlob = await takePhoto(); // Assume takePhoto() returns a Blob
 
-                // Single request to upload photo and update user
+                const formData = new FormData();
+                formData.append('photo', photoBlob, "user_photo.jpg");
+                
                 const response = await fetch(`${apiUrl}/${user._id}/upload-photo`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ photo: photoBase64 })
+                    body: formData, 
                 });
 
                 if (!response.ok) {
@@ -87,7 +85,7 @@ export const SetProvider = ({ children }) => {
                 setUser(updatedUser);
             } catch (error) {
                 console.error('Error handling photo:', error);
-                return; // Don't proceed with product selection if photo capture/upload fails
+                return;
             }
         }
     };
