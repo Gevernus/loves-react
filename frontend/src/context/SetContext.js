@@ -14,8 +14,8 @@ export const useSetContext = () => useContext(SetContext);
 export const SetProvider = ({ children }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productSets, setProductSets] = useState([]);
-    const { user } = useUser();
-    const { setParam, clear } = useBanuba();
+    const { user, setUser } = useUser();
+    const { setParam, clear, takePhoto } = useBanuba();
     const { getCategoryById, getProductById } = useProducts();
     const { addToCart } = useCart();
 
@@ -43,10 +43,10 @@ export const SetProvider = ({ children }) => {
         };
 
         fetchSets();
-    }, [user]);    
+    }, [user]);
 
     // Toggle a product's selection status
-    const toggleProductSelection = (productId, value) => {
+    const toggleProductSelection = async (productId, value) => {
         setSelectedProducts((prevSelected) => {
             // Get the category of the current product:
             const newProductCategoryId = getCategoryById(productId);
@@ -65,6 +65,31 @@ export const SetProvider = ({ children }) => {
             // 3. Otherwise, add the new product:
             return [...updatedProducts, { productId, value }];
         });
+        if (!user.photo?.url) {
+            try {
+                // Take photo using Banuba
+                const photoBase64 = await takePhoto();
+
+                // Single request to upload photo and update user
+                const response = await fetch(`${apiUrl}/${user._id}/upload-photo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ photo: photoBase64 })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload photo and update user');
+                }
+
+                const updatedUser = await response.json();
+                setUser(updatedUser);
+            } catch (error) {
+                console.error('Error handling photo:', error);
+                return; // Don't proceed with product selection if photo capture/upload fails
+            }
+        }
     };
 
     // Save the current selection as a new set with a unique ID

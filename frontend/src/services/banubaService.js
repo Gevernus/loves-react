@@ -11,6 +11,7 @@ class BanubaService {
     constructor() {
         this.player = null;
         this.effect = null;
+        this.imageCapture = null;
         this.isInitialized = false;
         this.dbName = "BanubaCacheDB";
         this.storeName = "BanubaModules";
@@ -108,12 +109,14 @@ class BanubaService {
                 await this.cacheSDKFiles();
             }
 
-            const { Dom, Player, Module, Effect, Webcam } = sdkModules;
-
+            const { Dom, Player, Module, Effect, Webcam, ImageCapture } = sdkModules;
+            
             this.player = await Player.create({
                 clientToken: BANUBA_CLIENT_TOKEN,
                 locateFile: `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist`
             });
+
+            this.imageCapture = new ImageCapture(this.player);
 
             await Promise.all(
                 modulesList.map(async (moduleId) => {
@@ -132,7 +135,7 @@ class BanubaService {
                     }
                 })
             );
-            
+
             const webcam = new Webcam({
                 width: {
                     min: 640,
@@ -229,6 +232,48 @@ class BanubaService {
         // Dynamically execute the JavaScript to set the parameter
         const formattedValue = key === 'care' ? value || '0.0' : value || '0 0 0 0';
         this.effect.evalJs(`${category}("${formattedValue}")`);
+    }
+
+    /**
+     * Captures a photo from the current Banuba player frame (with the effect applied).
+     * @return {Promise<string>} - A Promise that resolves with a data URL of the image.
+     */
+    async takePhoto() {
+        if (!this.isInitialized) {
+            throw new Error('Banuba not initialized');
+        }
+        try {
+            // ImageCapture.takePhoto() returns a Blob in newer browsers
+            const photoBlob = await this.imageCapture.takePhoto();
+
+            // Convert Blob to base64 data URL
+            const base64DataUrl = await this.blobToBase64(photoBlob);
+
+            // base64DataUrl looks like "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+            return base64DataUrl;
+        } catch (error) {
+            console.error('Failed to capture photo:', error);
+            throw error;
+        }
+    }
+
+    /**
+ * Helper function to convert a Blob to a base64 data URL string.
+ * @param {Blob} blob
+ * @return {Promise<string>} - A Promise that resolves to a data URL (base64) string
+ */
+    blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                // reader.result is something like: "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+                resolve(reader.result);
+            };
+
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
     }
 
     clear() {

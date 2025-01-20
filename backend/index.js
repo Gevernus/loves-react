@@ -3,12 +3,21 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const crypto = require('crypto');
+const { url } = require("inspector");
 
 const app = express();
 app.use(cors({
     exposedHeaders: ['Content-Range']
 }));
 app.use(bodyParser.json());
+
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const mongoUri = process.env.MONGO_URI || "mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin";
 
@@ -87,6 +96,10 @@ const userSchema = new mongoose.Schema({
     checkAccessories: { type: Boolean, default: false },
     checkWeight: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
+    photo: {
+        url: { type: String }, 
+        uploadedAt: { type: Date, default: Date.now }
+    },
     referrals: [{
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         createdAt: { type: Date, default: Date.now }
@@ -162,6 +175,33 @@ const ShareLink = mongoose.model('ShareLink', shareLinkSchema);
 function generateHash(length = 8) {
     return crypto.randomBytes(length).toString('hex');
 }
+
+app.post('/api/:userId/upload-photo', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { photo } = req.body; // base64 string
+
+        // Upload to cloudinary directly
+        const result = await cloudinary.uploader.upload(photo, {
+            folder: 'user-photos',
+        });
+
+        // Update user with photo URL and return the updated user
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId },
+            {
+                'photo.url': result.secure_url,
+                'photo.uploadedAt': new Date()
+            },
+            { new: true } // This option returns the updated document
+        );
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error('Upload error:', error);
+        res.status(500).json({ error: 'Upload failed' });
+    }
+});
 
 app.get("/api/:userId/level", async (req, res) => {
     const { userId } = req.params;

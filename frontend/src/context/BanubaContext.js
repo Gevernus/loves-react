@@ -31,6 +31,7 @@ export const BanubaProvider = ({ children }) => {
             player,
             initialize,
             setParam: (...args) => banubaService.setParam(...args),
+            takePhoto: (...args) => banubaService.takePhoto(...args),
             clear: () => banubaService.clear(),
         }}>
             {children}

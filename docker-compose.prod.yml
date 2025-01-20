@@ -50,6 +50,9 @@ services:
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     environment:
       - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api
+      - CLOUDINARY_CLOUD_NAME=dm31xhpot
+      - CLOUDINARY_API_KEY=559895215387326
+      - CLOUDINARY_API_SECRET=IwddD8Bf5Jwdj_ohf_HXNMy9klo
       - NODE_ENV=production
     volumes:
       - /etc/ssl/certs:/etc/ssl/certs:ro
@@ -101,8 +104,6 @@ services:
       - NODE_ENV=production
       - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin
     volumes:
-      - ./backend:/app
-      - /app/node_modules
       - /etc/ssl/certs:/etc/ssl/certs:ro
     restart: unless-stopped
     networks:

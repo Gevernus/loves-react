@@ -15,6 +15,7 @@ import {
     SelectInput,
     NumberInput,
     TitlePortal,
+    ImageField,
 } from 'react-admin';
 
 export const UserList = () => (
@@ -31,6 +32,7 @@ export const UserList = () => (
             <BooleanField source="checkAccessories" />
             <BooleanField source="checkWeight" />
             <DateField source="createdAt" showTime={true} />
+            <ImageField source="photo.url" label="Photo" />
             <EditButton />
         </Datagrid>
     </List>
