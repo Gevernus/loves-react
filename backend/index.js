@@ -24,6 +24,9 @@ const productSchema = new mongoose.Schema({
     description: { type: String },
     category: { type: String, required: true }, // Category as a simple string field
     colors: { type: [String], default: [] },   // Array of color hex codes
+    short_description: { type: String },  // Added short description field
+    contains: { type: String },           // Added contains field
+    using: { type: String },             // Added using field
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });

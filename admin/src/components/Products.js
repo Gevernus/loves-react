@@ -23,6 +23,7 @@ export const ProductList = () => (
             <TextField source="name" />
             <NumberField source="price" />
             <TextField source="category" />
+            <TextField source="short_description" />
             <TextField source="image" />
             <EditButton />
         </Datagrid>
@@ -35,7 +36,10 @@ export const ProductEdit = () => (
             <TextInput source="name" />
             <NumberInput source="price" />
             <TextInput source="category" />
+            <TextInput source="short_description" />
             <TextInput source="description" multiline rows={4} />
+            <TextInput source="contains" multiline rows={3} />
+            <TextInput source="using" multiline rows={3} />
             <TextInput source="image" />
             <ArrayInput source="colors">
                 <SimpleFormIterator>
@@ -52,7 +56,10 @@ export const ProductCreate = () => (
             <TextInput source="name" />
             <NumberInput source="price" />
             <TextInput source="category" />
+            <TextInput source="short_description" />
             <TextInput source="description" multiline rows={4} />
+            <TextInput source="contains" multiline rows={3} />
+            <TextInput source="using" multiline rows={3} />
             <TextInput source="image" />
             <ArrayInput source="colors">
                 <SimpleFormIterator>
