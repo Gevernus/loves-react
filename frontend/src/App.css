@@ -90,6 +90,7 @@ body {
 }
 
 .footer {
+  z-index: 10;
   height: 65px;
   max-width: 430px;
   position: fixed;
