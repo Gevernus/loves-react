@@ -59,7 +59,7 @@ const SetButton = () => {
             {selectedProducts.length > 0 && (
                 <button
                     onClick={handleButtonClick}
-                    className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 active:scale-95"
+                    className="bg-pink_с hover:bg-light_pink text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 active:scale-95"
                 >
                     {buttonLabel}
                 </button>

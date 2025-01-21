@@ -45,7 +45,7 @@ const PaymentView = () => {
 
                 </div>
                 <button
-                    className="bg-pink-500 text-white rounded-full py-3 mt-60 order-button payment-button">
+                    className="bg-pink_с text-white rounded-full py-3 mt-60 order-button payment-button">
                     продолжить
                 </button>
             </div>

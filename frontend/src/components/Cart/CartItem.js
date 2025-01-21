@@ -37,14 +37,14 @@ const CartItem = ({ item }) => {
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => updateQuantity(item.name, false)}
-                            className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center"
+                            className="w-8 h-8 rounded-full bg-pink_с text-white flex items-center justify-center"
                         >
                             -
                         </button>
                         <span>{item.quantity}</span>
                         <button
                             onClick={() => updateQuantity(item.name, true)}
-                            className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center"
+                            className="w-8 h-8 rounded-full bg-pink_с text-white flex items-center justify-center"
                         >
                             +
                         </button>

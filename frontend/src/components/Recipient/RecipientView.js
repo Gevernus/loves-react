@@ -108,7 +108,7 @@ const RecipientView = () => {
 
                     <button
                         type="submit"
-                        className="bg-pink-500 text-white rounded-full py-3 mt-4 order-button disabled:opacity-50"
+                        className="bg-pink_с text-white rounded-full py-3 mt-4 order-button disabled:opacity-50"
                         disabled={!isFormValid}>
                         Сохранить и продолжить
                     </button>

@@ -8,9 +8,9 @@ const LoadingScreen = () => {
                 alt="App Logo"
                 className="object-contain loading-logo"
             />
-            <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-pink_с border-t-transparent rounded-full animate-spin" />
             {/* <div className="flex flex-col items-center gap-3">
-                <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-4 border-pink_с border-t-transparent rounded-full animate-spin" />
                 <span className="text-lg font-medium text-gray-700">Loading...</span>
             </div> */}
         </div>

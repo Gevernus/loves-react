@@ -136,7 +136,7 @@ const BasketView = () => {
 
                 <button
                     type="submit"
-                    className="bg-pink-500 text-white rounded-full py-3 mt-8 col-span-2 disabled:opacity-50"
+                    className="bg-pink_с text-white rounded-full py-3 mt-8 col-span-2 disabled:opacity-50"
                     disabled={!formData.address || !formData.date}>
                     Оформить заказ
                 </button>

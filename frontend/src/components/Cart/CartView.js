@@ -81,7 +81,7 @@ const CartView = () => {
                 </div>
                 <button
                     onClick={handleCatalogRedirect}
-                    className="bg-pink-500 text-white rounded-full py-3 mt-4 order-button"
+                    className="bg-pink_с text-white rounded-full py-3 mt-4 order-button"
                 >
                     Перейти в каталог
                 </button>
@@ -146,7 +146,7 @@ const CartView = () => {
                 <button
                     onClick={handlePayment}
                     disabled={loading}
-                    className="bg-pink-500 text-white rounded-full py-3 mt-4 order-button disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="bg-pink_с text-white rounded-full py-3 mt-4 order-button disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                     {loading ? 'Обработка...' : 'Оплатить'}
                 </button>
