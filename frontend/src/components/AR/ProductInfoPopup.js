@@ -11,19 +11,17 @@ const ProductInfoPopup = ({ isOpen, onClose, product }) => {
         {
             id: 0,
             label: 'Описание',
-            content:
-                'Кремовая текстура помады комфортно обволакивает губы, придаёт им красивый сатиновый финиш. Идеально и ровно наносится, обеспечивая нежный розовый оттенок одним движением.',
+            content: `${product.description}`,
         },
         {
             id: 1,
             label: 'Состав',
-            content:
-                'This content tab 2 Кремовая текстура помады комфортно обволакивает губы, придаёт им красивый сатиновый финиш.',
+            content: `${product.contains}`,
         },
         {
             id: 2,
             label: 'Применение',
-            content: `This content tab 3 ${product.name}`,
+            content: `${product.using}`,
         },
     ];
 
@@ -61,7 +59,7 @@ const ProductInfoPopup = ({ isOpen, onClose, product }) => {
                     </p>
                 </div>
                 <p className="w-full font-normal text-base text-gray-700 mb-2">
-                    {product.description}
+                    {product.short_description}
                 </p>
                 <ColorPalette product={product} />
 
@@ -75,11 +73,17 @@ const ProductInfoPopup = ({ isOpen, onClose, product }) => {
                             } rounded-2xl w-1/3 py-2.5 px-1.5 text-sm text-grey`}
                         >
                             {tab.label}
+                            {console.log(tab.content)}
                         </button>
                     ))}
                 </div>
                 <div className="font-normal text-base">
-                    {tabs[activeTab].content}
+                    {tabs[activeTab].content == 'null' ||
+                    tabs[activeTab].content == '' ? (
+                        <h4>Описание скоро будет готово</h4>
+                    ) : (
+                        tabs[activeTab].content
+                    )}
                 </div>
             </div>
         </Modal>
