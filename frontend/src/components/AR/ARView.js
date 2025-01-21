@@ -62,43 +62,16 @@ const ARView = () => {
                 .replace('T', '_')      // Replace 'T' with an underscore
                 .slice(0, 19);          // Take only the date and time part
 
-            // Convert Blob to File
-            const file = new File([photoData], `ar-makeup-look_${dateString}.jpg`, { type: 'image/jpeg' });
-
-            // Create sharing data
-            const shareData = {
-                title: 'Мой образ',
-                text: 'Зацени мой образ в приложении Loves AR!',
-                url: window.location.href,
-                files: [file]
-            };
-
-            // Try using Web Share API first
-            if (navigator.share && navigator.canShare({ files: shareData.files })) {
-                try {
-                    await navigator.share(shareData);
-                } catch (error) {
-                    if (error.name === 'AbortError') {
-                        console.warn('User canceled the share action.');
-                        return;
-                        // Optional: Provide feedback to the user (e.g., toast notification)
-                    } else {
-                        console.error('Error sharing via Web Share API:', error);
-                        fallbackToTelegram();
-                    }
-                }
-            } else {
-                fallbackToTelegram();
-            }
-
             // Save to device
-            // if (photoData) {
-            //     const link = document.createElement('a');
-            //     link.download = `ar-makeup-look_${dateString}.jpg`;
-            //     link.href = URL.createObjectURL(photoData);
-            //     link.click();
-            //     URL.revokeObjectURL(link.href);
-            // }
+            if (photoData) {
+                const link = document.createElement('a');
+                link.download = `ar-makeup-look_${dateString}.jpg`;
+                link.href = URL.createObjectURL(photoData);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } else {
+                console.error('No photo data captured.');
+            }
         } catch (error) {
             console.error('Error capturing photo:', error);
         }
