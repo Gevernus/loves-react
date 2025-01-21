@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { useBanuba } from '../../context/BanubaContext';
+import { Camera } from 'lucide-react';
 import ColorPalette from './ColorPalette';
 import ProductInfo from './ProductInfo';
 import CareSlider from './CareSlider';
@@ -10,6 +11,7 @@ import Footer from '../Layout/Footer';
 import Header from '../Layout/Header';
 import { useProducts } from "../../context/ProductContext";
 import SetButton from './SetButton';
+import WebApp from '@twa-dev/sdk';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -18,7 +20,7 @@ import 'swiper/css/navigation';
 const ARView = () => {
     const { category } = useParams();
     const { products } = useProducts();
-    const { dom, player } = useBanuba();
+    const { dom, player, takePhoto } = useBanuba();
     const arContainerRef = useRef(null);
     const [selectedCategory, setSelectedCategory] = useState(category || 'lips');
     const [product, setProduct] = useState(null);
@@ -48,10 +50,78 @@ const ARView = () => {
         setProduct(selectedProduct);
     };
 
+    const handlePhotoCapture = async () => {
+        try {
+            // Capture photo using Banuba's takePhoto function
+            const photoData = await takePhoto(); // Assume this returns a Blob
+
+            // Generate a timestamp for the file name
+            const date = new Date();
+            const dateString = date.toISOString()
+                .replace(/[:.]/g, '-')  // Replace colons and dots with hyphens
+                .replace('T', '_')      // Replace 'T' with an underscore
+                .slice(0, 19);          // Take only the date and time part
+
+            // Convert Blob to File
+            const file = new File([photoData], `ar-makeup-look_${dateString}.jpg`, { type: 'image/jpeg' });
+
+            // Create sharing data
+            const shareData = {
+                title: 'Мой образ',
+                text: 'Зацени мой образ в приложении Loves AR!',
+                url: window.location.href,
+                files: [file]
+            };
+
+            // Try using Web Share API first
+            if (navigator.share && navigator.canShare({ files: shareData.files })) {
+                try {
+                    await navigator.share(shareData);
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.warn('User canceled the share action.');
+                        return;
+                        // Optional: Provide feedback to the user (e.g., toast notification)
+                    } else {
+                        console.error('Error sharing via Web Share API:', error);
+                        fallbackToTelegram();
+                    }
+                }
+            } else {
+                fallbackToTelegram();
+            }
+
+            // Save to device
+            // if (photoData) {
+            //     const link = document.createElement('a');
+            //     link.download = `ar-makeup-look_${dateString}.jpg`;
+            //     link.href = URL.createObjectURL(photoData);
+            //     link.click();
+            //     URL.revokeObjectURL(link.href);
+            // }
+        } catch (error) {
+            console.error('Error capturing photo:', error);
+        }
+    };
+
+    const fallbackToTelegram = () => {
+        const telegramLink = `https://t.me/share/url?url=https://t.me/Loves_ai_for_you_bot/LoVeS&text=${encodeURIComponent('Зацени мой образ в приложении Loves AR!')}`;
+        WebApp.openTelegramLink(telegramLink);
+    };
+
     return (
         <div className="app">
             <Header />
-            <div className="ar-content">
+            <div className="ar-content relative">
+                {/* Photo capture button */}
+                <button
+                    onClick={handlePhotoCapture}
+                    className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+                    aria-label="Take photo"
+                >
+                    <Camera className="w-6 h-6 text-gray-700" />
+                </button>
+
                 <div
                     ref={arContainerRef}
                     className="w-full bg-gray-100"
