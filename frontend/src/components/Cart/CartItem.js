@@ -18,7 +18,7 @@ const CartItem = ({ item }) => {
                 <div className="flex justify-between">
                     <div>
                         <h3 className="font-medium">{item.name}</h3>
-                        <p className="text-sm text-gray-500">{item.description}</p>
+                        <p className="text-sm text-gray-500">{item.short_description}</p>
                         <p className="text-sm">{item.variant}</p>
                     </div>
                     <button

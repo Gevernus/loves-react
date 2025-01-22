@@ -137,6 +137,8 @@ footer .active {
   padding: 20px;
   width: 100%;
   max-width: 430px;
+  background-color: #ffffff;
+  z-index: 5;
 }
 
 .color-selector {
@@ -377,7 +379,6 @@ footer .active {
 
 .product-swiper-container {
   position: relative;
-  padding: 0 20px;
   /* Make room for navigation arrows */
 }
 
