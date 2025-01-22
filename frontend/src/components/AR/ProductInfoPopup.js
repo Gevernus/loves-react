@@ -11,17 +11,17 @@ const ProductInfoPopup = ({ isOpen, onClose, product }) => {
         {
             id: 0,
             label: 'Описание',
-            content: `${product.description}`,
+            content: product.description || null,
         },
         {
             id: 1,
             label: 'Состав',
-            content: `${product.contains}`,
+            content: product.contains || null,
         },
         {
             id: 2,
             label: 'Применение',
-            content: `${product.using}`,
+            content: product.using || null,
         },
     ];
 
@@ -68,21 +68,18 @@ const ProductInfoPopup = ({ isOpen, onClose, product }) => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`${
-                                activeTab === tab.id ? 'activeTabPopap' : ''
-                            } rounded-2xl w-1/3 py-2.5 px-1.5 text-sm text-grey`}
+                            className={`${activeTab === tab.id ? 'activeTabPopap' : ''
+                                } rounded-2xl w-1/3 py-2.5 px-1.5 text-sm text-grey`}
                         >
                             {tab.label}
-                            {console.log(tab.content)}
                         </button>
                     ))}
                 </div>
                 <div className="font-normal text-base">
-                    {tabs[activeTab].content == 'null' ||
-                    tabs[activeTab].content == '' ? (
-                        <h4>Описание скоро будет готово</h4>
-                    ) : (
+                    {tabs[activeTab].content ? (
                         tabs[activeTab].content
+                    ) : (
+                        <h4>Описание скоро будет готово</h4>
                     )}
                 </div>
             </div>
