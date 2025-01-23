@@ -10,7 +10,9 @@ import CareSlider from './CareSlider';
 import Footer from '../Layout/Footer';
 import Header from '../Layout/Header';
 import { useProducts } from "../../context/ProductContext";
+import { useUpload } from "../../context/UploadContext";
 import SetButton from './SetButton';
+import PhotoPreview from './PhotoPreview';
 import WebApp from '@twa-dev/sdk';
 import SelectCategory from './SelectCategory';
 
@@ -19,6 +21,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 const ARView = () => {
+    const { uploadToCloudinary, isUploadingPhoto } = useUpload();
     const { category } = useParams();
     const { products } = useProducts();
     const { dom, player, takePhoto } = useBanuba();
@@ -27,6 +30,8 @@ const ARView = () => {
     const [product, setProduct] = useState(null);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [rendered, setRendered] = useState(false);
+    const [previewPhoto, setPreviewPhoto] = useState(null);
+    const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState(null);
 
     useEffect(() => {
         const newFilteredProducts = products?.filter(prod => prod.category === selectedCategory) || [];
@@ -53,23 +58,12 @@ const ARView = () => {
 
     const handlePhotoCapture = async () => {
         try {
-            // Capture photo using Banuba's takePhoto function
-            const photoData = await takePhoto(); // Assume this returns a Blob
-
-            // Generate a timestamp for the file name
-            const date = new Date();
-            const dateString = date.toISOString()
-                .replace(/[:.]/g, '-')  // Replace colons and dots with hyphens
-                .replace('T', '_')      // Replace 'T' with an underscore
-                .slice(0, 19);          // Take only the date and time part
-
-            // Save to device
+            const photoData = await takePhoto();
             if (photoData) {
-                const link = document.createElement('a');
-                link.download = `ar-makeup-look_${dateString}.jpg`;
-                link.href = URL.createObjectURL(photoData);
-                link.click();
-                URL.revokeObjectURL(link.href);
+                setPreviewPhoto(photoData);
+                // Immediately start uploading
+                const uploadedUrl = await uploadToCloudinary(photoData);
+                setUploadedPhotoUrl(uploadedUrl);
             } else {
                 console.error('No photo data captured.');
             }
@@ -78,9 +72,32 @@ const ARView = () => {
         }
     };
 
-    const fallbackToTelegram = () => {
-        const telegramLink = `https://t.me/share/url?url=https://t.me/Loves_ai_for_you_bot/LoVeS&text=${encodeURIComponent('Зацени мой образ в приложении Loves AR!')}`;
-        WebApp.openTelegramLink(telegramLink);
+    const handlePhotoAction = async (action) => {
+        if (!uploadedPhotoUrl) return;
+
+        try {
+            if (action === 'story') {
+                // Implement Telegram story sharing
+                WebApp.shareToStory(uploadedPhotoUrl);
+            } else if (action === 'save') {
+                // Download file using WebApp method
+                WebApp.downloadFile({
+                    url: uploadedPhotoUrl,
+                    file_name: `ar-makeup-look_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.jpg`
+                });
+            }
+
+            // Reset states after sharing
+            setPreviewPhoto(null);
+            setUploadedPhotoUrl(null);
+        } catch (error) {
+            console.error('Error sharing photo:', error);
+        }
+    };
+
+    const handleClosePreview = () => {
+        setPreviewPhoto(null);
+        setUploadedPhotoUrl(null);
     };
 
     return (
@@ -150,6 +167,15 @@ const ARView = () => {
                     )}
                     <SetButton />
                 </div>
+                {previewPhoto && (
+                    <PhotoPreview
+                        photoData={previewPhoto}
+                        onClose={handleClosePreview}
+                        onUpload={handlePhotoAction}
+                        uploadUrl={uploadedPhotoUrl}
+                        isUploading={isUploadingPhoto}
+                    />
+                )}
             </div>
             <Footer />
         </div>
