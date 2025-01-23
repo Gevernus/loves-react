@@ -12,6 +12,7 @@ import Header from '../Layout/Header';
 import { useProducts } from "../../context/ProductContext";
 import SetButton from './SetButton';
 import WebApp from '@twa-dev/sdk';
+import SelectCategory from './SelectCategory';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -41,8 +42,8 @@ const ARView = () => {
         }
     }, [dom, player]);
 
-    const handleCategoryChange = (e) => {
-        setSelectedCategory(e.target.value);
+    const handleCategoryChange = (categoryValue) => {
+        setSelectedCategory(categoryValue);
     };
 
     const handleSlideChange = (swiper) => {
@@ -103,22 +104,7 @@ const ARView = () => {
 
                 <div className="color-selector">
                     <div className="header">
-                        <select
-                            id="section-dropdown"
-                            className="dropdown"
-                            value={selectedCategory}
-                            onChange={handleCategoryChange}
-                        >
-                            <option value="lips">Губы</option>
-                            <option value="brows">Брови</option>
-                            <option value="care">Уход</option>
-                            <option value="blushes">Румяна</option>
-                            <option value="eyeshadow">Тени</option>
-                            <option value="lashes">Ресницы</option>
-                            <option value="eyeliner">Подводки</option>
-                            <option value="hair">Волосы</option>
-                        </select>
-                        <img id="1" className="dropdown-arrow" src="/arrow.png" alt="menu" />
+                        <SelectCategory handleCategoryChange={handleCategoryChange} selectedCategory={selectedCategory} />                       
                     </div>
 
                     {filteredProducts.length > 0 ? (
