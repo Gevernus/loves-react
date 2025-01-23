@@ -30,7 +30,7 @@ const PhotoPreview = ({ photoData, onClose, onUpload, uploadUrl, isUploading }) 
                             ) : (
                                 <Share2 className="mr-2 w-5 h-5" />
                             )}
-                            Share to Story
+                            Поделиться
                         </button>
                         <button
                             onClick={() => onUpload('save')}
@@ -42,7 +42,7 @@ const PhotoPreview = ({ photoData, onClose, onUpload, uploadUrl, isUploading }) 
                             ) : (
                                 <Download className="mr-2 w-5 h-5" />
                             )}
-                            Share Photo
+                            Сохранить
                         </button>
                     </div>
                 </div>
