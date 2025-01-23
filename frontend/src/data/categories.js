@@ -2,41 +2,41 @@ export const categories = [
     {
         id: 'lips',
         title: 'Губы',
-        image: 'lips.png',
+        image: 'lips-home.webp',
     },
     {
         id: 'brows',
         title: 'Брови',
-        image: 'brows.png',
+        image: 'brows-home.webp',
     },
     {
         id: 'blushes',
         title: 'Румяна',
-        image: 'blushes.png',
+        image: 'blushes-home.webp',
     },
     {
         id: 'eyeshadow',
         title: 'Тени',
-        image: 'eyeshadow.png',
+        image: 'eyeshadow-home.webp',
     },
     {
         id: 'lashes',
         title: 'Ресницы',
-        image: 'lashes.webp',
+        image: 'lashes-home.webp',
     },
     {
         id: 'eyeliner',
         title: 'Подводки',
-        image: 'eyeliner.png',
-    },
-    {
-        id: 'care',
-        title: 'Уход за AS Hero',
-        image: 'care.png',
+        image: 'eyeliner-home.webp',
     },
     {
         id: 'hair',
         title: 'Волосы',
-        image: 'hair.jpg',
+        image: 'hair-home.webp',
+    },
+    {
+        id: 'care',
+        title: 'Уход',
+        image: 'care-home.webp',
     }
 ];

@@ -16,7 +16,7 @@ const HomeScreen = () => {
         <div className="app">
             <Header />
             <div className="max-w-7xl mx-auto px-4 mb-[65px]">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-2 mb-7">
                     {categories.map((category) => (
                         <CategoryCard
                             key={category.id}
