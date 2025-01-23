@@ -82,7 +82,7 @@ const ARView = () => {
                 // Download file using WebApp method
                 WebApp.downloadFile({
                     url: uploadedPhotoUrl,
-                    filename: `ar-makeup-look_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.jpg`
+                    filename: 'ar-makeup-look.jpg'
                 });
             }
 
