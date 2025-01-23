@@ -20,9 +20,16 @@ const Footer = () => {
     return (
         <div className="footer">
             <img className="menu" src="/menu.png" alt="menu" />
-            <img id="book" src="/book.png" alt="book" onClick={handleBookClick} />
-            <img id="brush" src="/brush.png" alt="brush" onClick={handleBrushClick} />
-            <div className="icon-container" onClick={handleCartClick} >
+            <img
+                id="book"
+                src="/book.png"
+                alt="book"
+                onClick={handleBookClick}
+            />
+            <div id="brush" className="flex justify-center items-center w-[3.8rem] h-[3.8rem] bg-pink_с rounded-full">
+                <img src="/brush.png" alt="brush" onClick={handleBrushClick} />
+            </div>
+            <div className="icon-container" onClick={handleCartClick}>
                 <img id="cart" src="/cart.png" alt="cart" />
                 {getTotalItems() > 0 && (
                     <span id="badge" className="badge">

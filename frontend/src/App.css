@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-img {
+/* img {
   height: auto;
   max-width: 430px;
-}
+} */
 
 body {
   height: 100vh;
@@ -23,6 +23,64 @@ body {
   overflow: hidden;
 }
 
+/* ================footer================== */
+.footer {
+  z-index: 10;
+  height: 65px;
+  max-width: 430px;
+  position: fixed;
+  bottom: 0;
+  align-self: center;
+}
+
+.icon-container {
+  top: 29%;
+  left: 75%;
+  position: absolute;
+  height: 35px;
+}
+
+.menu {
+  max-width: 430px;
+  height: 65px;
+}
+
+#book {
+  position: absolute;
+  height: 30px;
+  top: 30%;
+  left: 15%;
+}
+
+#brush {
+  position: absolute;
+  transform: translateX(-50%);
+  top: -50%;
+  left: 50%;
+  box-shadow: 0px 0px 10px 8px #fff;
+}
+
+#cart {
+  position: absolute;
+  height: 30px;
+  max-width: 30px;
+}
+
+.badge {
+  position: absolute;
+  top: -3px;
+  right: -35px;
+  background-color: #fb2d98;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 7px;
+  border-radius: 50%;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ======================= */
 .content {
   max-width: 430px;
   margin-bottom: 45px;
@@ -37,20 +95,6 @@ body {
   max-width: 430px;
   display: flex;
   flex-direction: column;
-}
-
-@media (max-width: 431px) {
-  .ar-content {
-    max-width: 100%;
-  }
-
-  .cart-content {
-    max-width: 100%;
-  }
-
-  .content {
-    max-width: 100%;
-  }
 }
 
 .content h2 {
@@ -101,15 +145,6 @@ body {
   align-self: flex-start;
   width: 184px;
   padding: 10px;
-}
-
-.footer {
-  z-index: 10;
-  height: 65px;
-  max-width: 430px;
-  position: fixed;
-  bottom: 0;
-  align-self: center;
 }
 
 footer .icon {
@@ -222,30 +257,6 @@ footer .active {
   height: 35px;
 }
 
-.menu {
-  width: 430px;
-  height: 65px;
-}
-
-#book {
-  position: absolute;
-  height: 30px;
-  top: 30%;
-  left: 15%;
-}
-
-#brush {
-  top: -90%;
-  left: 35.5%;
-  position: absolute;
-  height: 125px;
-}
-
-#cart {
-  position: absolute;
-  height: 35px;
-}
-
 .product {
   display: flex;
   align-items: center;
@@ -326,27 +337,6 @@ footer .active {
 
 .slider-section {
   margin: 10px 0;
-}
-
-.icon-container {
-  top: 20%;
-  left: 75%;
-  position: absolute;
-  height: 35px;
-}
-
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -50px;
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 50%;
-  text-align: center;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .card-link {
@@ -438,4 +428,23 @@ footer .active {
   background-color: #fb2d98;
   color: #fff;
   font-weight: 500;
+}
+
+/* ========== Media ============= */
+@media (max-width: 431px) {
+  .ar-content {
+    max-width: 100%;
+  }
+
+  .cart-content {
+    max-width: 100%;
+  }
+
+  .content {
+    max-width: 100%;
+  }
+
+  .menu {
+    max-width: 100%; 
+  }
 }
