@@ -11,6 +11,7 @@ import { useSetContext } from './context/SetContext';
 import { CartProvider } from './context/CartContext';
 import { UserProvider, useUser } from './context/UserContext';
 import { SetProvider } from "./context/SetContext";
+import { UploadProvider } from "./context/UploadContext";
 import CartView from './components/Cart/CartView';
 import { initGA, pageView } from './services/Analytics';
 import BasketView from './components/Basket/BasketView';
@@ -115,7 +116,9 @@ const App = () => {
           <ProductProvider>
             <CartProvider>
               <SetProvider>
-                <AppContent />
+                <UploadProvider>
+                  <AppContent />
+                </UploadProvider>                
               </SetProvider>
             </CartProvider>
           </ProductProvider>

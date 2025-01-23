@@ -3,6 +3,7 @@ import { useUser } from './UserContext';
 import { useBanuba } from './BanubaContext';
 import { useProducts } from "./ProductContext";
 import { useCart } from './CartContext';
+import { useUpload } from "./UploadContext";
 import WebApp from '@twa-dev/sdk';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -13,12 +14,12 @@ export const useSetContext = () => useContext(SetContext);
 
 export const SetProvider = ({ children }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const [productSets, setProductSets] = useState([]);
     const { user, setUser } = useUser();
     const { setParam, clear, takePhoto } = useBanuba();
     const { getCategoryById, getProductById } = useProducts();
     const { addToCart } = useCart();
+    const { uploadToCloudinary, isUploadingPhoto } = useUpload();
 
     useEffect(() => {
         clear();
@@ -46,25 +47,6 @@ export const SetProvider = ({ children }) => {
         fetchSets();
     }, [user]);
 
-    async function uploadToCloudinary(photoBlob) {
-        const formData = new FormData();
-        formData.append("file", photoBlob);
-        formData.append("upload_preset", "default");
-
-        const response = await fetch("https://api.cloudinary.com/v1_1/dm31xhpot/image/upload", {
-            method: "POST",
-            body: formData
-        });
-
-        const data = await response.json();
-        if (data.secure_url) {
-            console.log("Uploaded successfully:", data.secure_url);
-            return data.secure_url;
-        } else {
-            throw new Error("Upload failed");
-        }
-    }
-
     // Toggle a product's selection status
     const toggleProductSelection = async (productId, value) => {
         setSelectedProducts((prevSelected) => {
@@ -86,10 +68,14 @@ export const SetProvider = ({ children }) => {
             return [...updatedProducts, { productId, value }];
         });
         if (!user.photo?.url && !isUploadingPhoto) {
-            setIsUploadingPhoto(true); // ✅ Lock upload process
             try {
                 const photoBlob = await takePhoto(); // Capture photo
-                const photoUrl = await uploadToCloudinary(photoBlob);
+                const photoUrl = await uploadToCloudinary(photoBlob); // ✅ Upload via UploadContext
+
+                if (!photoUrl) {
+                    console.error("Failed to upload photo");
+                    return;
+                }
 
                 // ✅ Send API request to update user with photo URL
                 const payload = { photo: { url: photoUrl, uploadedAt: new Date() } };
@@ -107,8 +93,6 @@ export const SetProvider = ({ children }) => {
                 }
             } catch (error) {
                 console.error("Error handling photo:", error);
-            } finally {
-                setIsUploadingPhoto(false); // ✅ Unlock upload process
             }
         }
     };
