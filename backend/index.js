@@ -167,69 +167,98 @@ function generateHash(length = 8) {
     return crypto.randomBytes(length).toString('hex');
 }
 
-app.get("/api/:userId/level", async (req, res) => {
-    const { userId } = req.params;
 
-    try {
-        // Fetch the user by ID
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // Define the referral levels
-        const levels = [
-            { level: 1, referrals: 3, rewards: { permanent: 1, oneTime: 5, cashback: 0.5 } },
-            { level: 2, referrals: 5, rewards: { permanent: 2, oneTime: 10, cashback: 1 } },
-            { level: 3, referrals: 10, rewards: { permanent: 3, oneTime: 15, cashback: 1.5 } },
-            { level: 4, referrals: 20, rewards: { permanent: 4, oneTime: 20, cashback: 2 } },
-            { level: 5, referrals: 40, rewards: { permanent: 5, oneTime: 25, cashback: 2.5 } },
-            { level: 6, referrals: 80, rewards: { permanent: 6, oneTime: 25, cashback: 3 } },
-            { level: 7, referrals: 160, rewards: { permanent: 7, oneTime: 25, cashback: 3.5 } },
-            { level: 8, referrals: 320, rewards: { permanent: 8, oneTime: 25, cashback: 4 } },
-            { level: 9, referrals: 640, rewards: { permanent: 9, oneTime: 25, cashback: 4.5 } },
-            { level: 10, referrals: 1280, rewards: { permanent: 10, oneTime: 25, cashback: 5 } }
-        ];
-
-        // Find the user's level based on the number of referrals
-        const userReferralCount = user.referrals.length;
-        const userLevel = levels.find(level => userReferralCount >= level.referrals);
-
-        // If the user has no level, we still return a 200 status but with empty values
-        if (!userLevel) {
-            return res.status(200).json({
-                level: 0,
-                rewards: {},
-                nextLevelData: levels[0],
-                isRewardsSelected: true
-            });
-        }
-
-        const nextLevelData = (userLevel.level < levels.length) ? levels[userLevel.level] : null;
-        // Get the rewards for the user's level
-        const levelRewards = levels.find(level => level.level === userLevel.level).rewards;
-
-
-        // Check if the user has selected the correct number of rewards for the level
-        const selectedRewardsCount = user.selectedRewards.length;
-
-        // Determine if the user has already selected rewards for this level
-        const isRewardsSelected = selectedRewardsCount >= userLevel.level;
-
-        // Respond with the level and whether rewards are selected
-        res.status(200).json({
-            level: userLevel.level,
-            rewards: levelRewards,
-            nextLevelData,
-            isRewardsSelected: isRewardsSelected
-        });
-
-    } catch (error) {
-        console.error("Error calculating level and checking rewards:", error);
-        res.status(500).json({ error: "Failed to calculate level and check rewards" });
+// Create the Level model
+const levelSchema = new mongoose.Schema({
+    level: { type: Number, required: true, unique: true },
+    referrals: { type: Number, required: true },
+    rewards: {
+        permanent: { type: Number, default: 0 },
+        oneTime: { type: Number, default: 0 },
+        cashback: { type: Number, default: 0 },
     }
+}, {
+    timestamps: true, // Добавление createdAt и updatedAt
 });
+
+// Индекс для ускорения поиска по referrals
+levelSchema.index({ referrals: 1 });
+
+// Виртуальное свойство для id
+levelSchema.virtual("id").get(function () {
+    return this._id.toString();
+});
+
+// Учет виртуальных свойств при преобразовании в JSON
+levelSchema.set("toJSON", { virtuals: true });
+
+const Level = mongoose.model("Level", levelSchema);
+
+
+
+// app.get("/api/:userId/level", async (req, res) => {
+//     const { userId } = req.params;
+
+//     try {
+//         // Fetch the user by ID
+//         const user = await User.findById(userId);
+
+//         if (!user) {
+//             return res.status(404).json({ error: "User not found" });
+//         }
+
+//         // Define the referral levels
+//         const levels = [
+//             { level: 1, referrals: 3, rewards: { permanent: 1, oneTime: 5, cashback: 0.5 } },
+//             { level: 2, referrals: 5, rewards: { permanent: 2, oneTime: 10, cashback: 1 } },
+//             { level: 3, referrals: 10, rewards: { permanent: 3, oneTime: 15, cashback: 1.5 } },
+//             { level: 4, referrals: 20, rewards: { permanent: 4, oneTime: 20, cashback: 2 } },
+//             { level: 5, referrals: 40, rewards: { permanent: 5, oneTime: 25, cashback: 2.5 } },
+//             { level: 6, referrals: 80, rewards: { permanent: 6, oneTime: 25, cashback: 3 } },
+//             { level: 7, referrals: 160, rewards: { permanent: 7, oneTime: 25, cashback: 3.5 } },
+//             { level: 8, referrals: 320, rewards: { permanent: 8, oneTime: 25, cashback: 4 } },
+//             { level: 9, referrals: 640, rewards: { permanent: 9, oneTime: 25, cashback: 4.5 } },
+//             { level: 10, referrals: 1280, rewards: { permanent: 10, oneTime: 25, cashback: 5 } }
+//         ];
+
+//         // Find the user's level based on the number of referrals
+//         const userReferralCount = user.referrals.length;
+//         const userLevel = levels.find(level => userReferralCount >= level.referrals);
+
+//         // If the user has no level, we still return a 200 status but with empty values
+//         if (!userLevel) {
+//             return res.status(200).json({
+//                 level: 0,
+//                 rewards: {},
+//                 nextLevelData: levels[0],
+//                 isRewardsSelected: true
+//             });
+//         }
+
+//         const nextLevelData = (userLevel.level < levels.length) ? levels[userLevel.level] : null;
+//         // Get the rewards for the user's level
+//         const levelRewards = levels.find(level => level.level === userLevel.level).rewards;
+
+
+//         // Check if the user has selected the correct number of rewards for the level
+//         const selectedRewardsCount = user.selectedRewards.length;
+
+//         // Determine if the user has already selected rewards for this level
+//         const isRewardsSelected = selectedRewardsCount >= userLevel.level;
+
+//         // Respond with the level and whether rewards are selected
+//         res.status(200).json({
+//             level: userLevel.level,
+//             rewards: levelRewards,
+//             nextLevelData,
+//             isRewardsSelected: isRewardsSelected
+//         });
+
+//     } catch (error) {
+//         console.error("Error calculating level and checking rewards:", error);
+//         res.status(500).json({ error: "Failed to calculate level and check rewards" });
+//     }
+// });
 
 app.get('/api/:userId/cashback', async (req, res) => {
     const { userId } = req.params;
@@ -604,9 +633,70 @@ const handleAdminRoute = (Model, resourceName) => async (req, res) => {
     }
 };
 
+// Levels enpoints
+app.get("/api/admin/levels/:id", async (req, res) => {
+    try {
+        const level = await Level.findById(req.params.id);
+        if (!level) {
+            return res.status(404).json({ error: "Level not found" });
+        }
+        res.json(level);
+    } catch (error) {
+        console.error("Error fetching level:", error);
+        res.status(500).json({ error: "Failed to fetch level" });
+    }
+});
+
+// Create a new level
+app.post("/api/admin/levels", async (req, res) => {
+    try {
+        const level = new Level(req.body);
+        await level.save();
+        res.status(201).json(level);
+    } catch (error) {
+        console.error("Error creating level:", error);
+        res.status(500).json({ error: "Failed to create level" });
+    }
+});
+
+// Update the level by ID
+app.put("/api/admin/levels/:id", async (req, res) => {
+    try {
+        const level = await Level.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+        });
+        if (!level) {
+            return res.status(404).json({ error: "Level not found" });
+        }
+        res.json(level);
+    } catch (error) {
+        console.error("Error updating level:", error);
+        res.status(500).json({ error: "Failed to update level" });
+    }
+});
+
+// Delete a level by ID
+app.delete("/api/admin/levels/:id", async (req, res) => {
+    try {
+        const level = await Level.findByIdAndDelete(req.params.id);
+        if (!level) {
+            return res.status(404).json({ error: "Level not found" });
+        }
+        res.json({ id: req.params.id });
+    } catch (error) {
+        console.error("Error deleting level:", error);
+        res.status(500).json({ error: "Failed to delete level" });
+    }
+});
+
+
+
+
 app.get("/api/admin/products", handleAdminRoute(Product, "products"));
 app.get("/api/admin/users", handleAdminRoute(User, "users"));
 app.get("/api/admin/orders", handleAdminRoute(Order, "orders"));
+app.get("/api/admin/levels", handleAdminRoute(Level, "levels"));
 
 app.get("/api/admin/users/:id", async (req, res) => {
     const user = await User.findById(req.params.id);

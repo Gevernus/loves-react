@@ -1,8 +1,9 @@
-import { Admin, Resource, ListGuesser } from 'react-admin';
+import { Admin, Resource, EditGuesser  } from 'react-admin';
 import { dataProvider } from './dataProvider';
 import { ProductList, ProductEdit, ProductCreate } from './components/Products';
 import { UserList, UserEdit } from './components/Users';
 import { OrderList, OrderEdit } from './components/Orders';
+import { LevelList, LevelEdit, LevelCreate} from './components/Levels';
 import { Dashboard } from './components/Dashboard';
 
 const App = () => (
@@ -26,6 +27,13 @@ const App = () => (
       list={OrderList}
       edit={OrderEdit}
     />
+    <Resource
+      name="levels" // Add levels resource
+      list={LevelList}
+      edit={LevelEdit}
+      create={LevelCreate}
+    />
+    
   </Admin>
 );
 
