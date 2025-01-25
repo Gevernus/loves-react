@@ -342,7 +342,7 @@ footer .active {
 
 .dropdown-list {
   position: absolute;
-  z-index: 2;
+  z-index: 10000;
   background: white;
   padding-right: 10px;
   padding-bottom: 10px;
