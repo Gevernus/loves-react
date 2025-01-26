@@ -110,7 +110,7 @@ class BanubaService {
             }
 
             const { Dom, Player, Module, Effect, Webcam, ImageCapture } = sdkModules;
-            
+
             this.player = await Player.create({
                 clientToken: BANUBA_CLIENT_TOKEN,
                 locateFile: `https://cdn.jsdelivr.net/npm/@banuba/webar@${SDK_VERSION}/dist`
@@ -234,25 +234,61 @@ class BanubaService {
         this.effect.evalJs(`${category}("${formattedValue}")`);
     }
 
-    /**
-     * Captures a photo from the current Banuba player frame (with the effect applied).
-     * @return {Promise<string>} - A Promise that resolves with a data URL of the image.
-     */
     async takePhoto() {
         if (!this.isInitialized) {
             throw new Error('Banuba not initialized');
         }
         try {
             const photoSettings = {
-                quality: 0.7, // 70% quality (good balance)
+                quality: 0.7,
             };
-            // ImageCapture.takePhoto() returns a Blob in newer browsers
             const photoBlob = await this.imageCapture.takePhoto(photoSettings);
-            return photoBlob;
+            const watermarkedImage = await this.addImageWatermark(photoBlob);
+            return watermarkedImage;
         } catch (error) {
             console.error('Failed to capture photo:', error);
             throw error;
         }
+    }
+
+    async addImageWatermark(photoBlob) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const watermarkImg = new Image();
+
+            Promise.all([
+                new Promise(resolve => {
+                    img.onload = () => resolve(img);
+                    img.src = URL.createObjectURL(photoBlob);
+                }),
+                new Promise(resolve => {
+                    watermarkImg.onload = () => resolve(watermarkImg);
+                    watermarkImg.src = '/watermark.png';
+                })
+            ]).then(([mainImg, watermark]) => {
+                const canvas = document.createElement('canvas');
+                canvas.width = mainImg.width;
+                canvas.height = mainImg.height;
+                const ctx = canvas.getContext('2d');
+
+                // Draw original image
+                ctx.drawImage(mainImg, 0, 0);
+
+                // Calculate watermark position (bottom right corner)
+                const watermarkWidth = mainImg.width * 0.2; // 20% of image width
+                const watermarkHeight = watermarkWidth * (watermark.height / watermark.width);
+                const x = mainImg.width - watermarkWidth - 10;
+                const y = mainImg.height - watermarkHeight - 10;
+
+                // Draw watermark
+                ctx.drawImage(watermark, x, y, watermarkWidth, watermarkHeight);
+
+                // Convert to blob
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, photoBlob.type);
+            }).catch(reject);
+        });
     }
 
     /**
