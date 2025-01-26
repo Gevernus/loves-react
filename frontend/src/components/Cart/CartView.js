@@ -145,7 +145,7 @@ const CartView = () => {
 
                 <button
                     onClick={handlePayment}
-                    disabled={loading}
+                    disabled={true}
                     className="bg-pink_с text-white rounded-full py-3 mt-4 order-button disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                     {loading ? 'Обработка...' : 'Оплатить'}
