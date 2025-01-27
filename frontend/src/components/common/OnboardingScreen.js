@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import './OnboardingScreen.css';
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const OnboardingScreen = () => {
+    const { t } = useTranslation();
     const { user, setOnboarded } = useUser();
     const navigate = useNavigate();
     const [selectedCategories, setSelectedCategories] = useState({
@@ -35,7 +37,7 @@ const OnboardingScreen = () => {
             />
             <div className="background-image">
                 <div className="overlay">
-                    <h2>Что вас интересует?</h2>
+                    <h2>{t("What are you interested in?")}</h2>
                     <div className="checkbox-group">
                         <label>
                             <input
@@ -43,7 +45,7 @@ const OnboardingScreen = () => {
                                 checked={selectedCategories.checkCare}
                                 onChange={() => handleCheckboxChange('checkCare')}
                             />
-                            Уходовая косметика
+                            {t("Care Cosmetics")}
                         </label>
                         <label>
                             <input
@@ -51,7 +53,7 @@ const OnboardingScreen = () => {
                                 checked={selectedCategories.checkDecorate}
                                 onChange={() => handleCheckboxChange('checkDecorate')}
                             />
-                            Декоративная косметика
+                            {t("Decorative cosmetics")}
                         </label>
                         <label>
                             <input
@@ -59,7 +61,7 @@ const OnboardingScreen = () => {
                                 checked={selectedCategories.checkWeight}
                                 onChange={() => handleCheckboxChange('checkWeight')}
                             />
-                            Средства для похудения
+                            {t("Slimming aids")}
                         </label>
                         <label>
                             <input
@@ -67,11 +69,11 @@ const OnboardingScreen = () => {
                                 checked={selectedCategories.checkAccessories}
                                 onChange={() => handleCheckboxChange('checkAccessories')}
                             />
-                            Аксессуары
+                            {t("Accessories")}
                         </label>
                     </div>
                     <button className="continue-button" onClick={handleContinue}>
-                        Продолжить
+                        {t("Continue")}
                     </button>
                 </div>
             </div>

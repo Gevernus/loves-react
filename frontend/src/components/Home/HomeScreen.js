@@ -5,9 +5,11 @@ import Header from '../Layout/Header';
 import Footer from '../Layout/Footer';
 import OnboardingScreen from '../common/OnboardingScreen';
 import { useUser } from '../../context/UserContext';
+import { useTranslation } from 'react-i18next';
 
 const HomeScreen = () => {
     const { user } = useUser();
+    const { t } = useTranslation();
 
     if (user && !user.isOnboarded) {
         return <OnboardingScreen />;
@@ -21,7 +23,7 @@ const HomeScreen = () => {
                         <CategoryCard
                             key={category.id}
                             id={category.id}
-                            title={category.title}
+                            title={t(category.title)}
                             image={category.image}
                         />
                     ))}

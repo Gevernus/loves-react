@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CategoryCard = ({ title, image, id }) => {
+    const { t } = useTranslation();
     return (
         <Link
             to={`/ar/${id}`}
             className="relative block group overflow-hidden rounded-lg bg-bej shadow-md hover:shadow-lg transition-shadow duration-300"
         >
-           
             <div
                 id={id}
                 className="relative w-full p-2 flex flex-col justify-end"
@@ -19,7 +20,7 @@ const CategoryCard = ({ title, image, id }) => {
                 />
                 <h3 className="font-semibold text-blue_с truncate">{title}</h3>
                 <span className="text-[13px] ext-blue_с font-normal group-hover:text-pink_с transition-colors duration-300">
-                    Перейти к примерке →
+                    {t("Go to fitting")}
                 </span>
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300" />

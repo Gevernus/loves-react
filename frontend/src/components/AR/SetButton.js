@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSetContext } from "../../context/SetContext"; // Assuming SetContext is in the same directory
 import { useNavigate } from "react-router-dom"; // For navigation to SetView
+import { useTranslation } from 'react-i18next';
 
 const SetButton = () => {
     const {
@@ -10,8 +11,9 @@ const SetButton = () => {
         selectSet,
     } = useSetContext();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
-    const [buttonLabel, setButtonLabel] = useState("Создать набор");
+    const [buttonLabel, setButtonLabel] = useState(t("Create set"));
 
     // Check if the selected products match any set
     const checkIfProductsInSet = () => {
@@ -35,9 +37,9 @@ const SetButton = () => {
     useEffect(() => {
         const matchingSet = checkIfProductsInSet();
         if (matchingSet) {
-            setButtonLabel("Мои наборы");
+            setButtonLabel(t("My sets"));
         } else {
-            setButtonLabel("Создать набор");
+            setButtonLabel(t("Create set"));
         }
     }, [selectedProducts, productSets]);
 
@@ -50,7 +52,7 @@ const SetButton = () => {
         } else {
             // Create a new set and update the label
             saveSet();
-            setButtonLabel("Мои наборы");
+            setButtonLabel(t("My sets"));
         }
     };
 

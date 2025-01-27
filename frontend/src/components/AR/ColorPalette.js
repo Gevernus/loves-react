@@ -1,13 +1,15 @@
 import React from 'react';
 import { useSetContext } from "../../context/SetContext";
+import { useTranslation } from 'react-i18next';
 
 const ColorPalette = ({ product }) => {
     const { toggleProductSelection } = useSetContext();
+    const { t } = useTranslation();
 
     const handleColorSelect = (color) => {
         toggleProductSelection(product.id, color);
     };
-    
+
     return (
         <div id="color-palette" className="color-palette">
             <div
@@ -27,7 +29,7 @@ const ColorPalette = ({ product }) => {
                     ></div>
                 ))
                 ) : (
-                    <p>No color palette available for this product.</p>
+                    <p>{t("No color palette available for this product.")}</p>
                 )}
         </div>
     );

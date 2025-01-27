@@ -15,12 +15,14 @@ import SetButton from './SetButton';
 import PhotoPreview from './PhotoPreview';
 import WebApp from '@twa-dev/sdk';
 import SelectCategory from './SelectCategory';
+import { useTranslation } from 'react-i18next';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 
 const ARView = () => {
+    const { t } = useTranslation();
     const { uploadToCloudinary, isUploadingPhoto } = useUpload();
     const { category } = useParams();
     const { products } = useProducts();
@@ -41,7 +43,6 @@ const ARView = () => {
 
     useEffect(() => {
         if (arContainerRef.current && !rendered) {
-            console.log('render');
             dom.render(player, arContainerRef.current);
             setRendered(true);
         }
@@ -121,7 +122,7 @@ const ARView = () => {
 
                 <div className="color-selector">
                     <div className="header">
-                        <SelectCategory handleCategoryChange={handleCategoryChange} selectedCategory={selectedCategory} />                       
+                        <SelectCategory handleCategoryChange={handleCategoryChange} selectedCategory={selectedCategory} />
                     </div>
 
                     {filteredProducts.length > 0 ? (
@@ -163,7 +164,7 @@ const ARView = () => {
                             </div>
                         </div>
                     ) : (
-                        <p className="text-center text-gray-500">No products available in this category.</p>
+                            <p className="text-center text-gray-500">{t('No products available in this category.')}</p>
                     )}
                     <SetButton />
                 </div>

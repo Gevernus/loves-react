@@ -3,39 +3,40 @@ import { useSetContext } from "../../context/SetContext";
 import { useProducts } from "../../context/ProductContext";
 import Footer from "../Layout/Footer";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const ProfileView = () => {
+    const { t } = useTranslation();
     const { productSets, removeSet, shareSet, selectSet, buySet } = useSetContext();
     const { products, loading } = useProducts();
     const navigate = useNavigate();
 
     if (loading) {
-        return <p>Загрузка...</p>;
+        return <p>{t("Loading...")}</p>;
     }
 
     const handleRemoveSet = (setId) => {
-        removeSet(setId); 
+        removeSet(setId);
     };
 
     const handleShareSet = (setId) => {
-        shareSet(setId); 
+        shareSet(setId);
     };
 
     const handleBuySet = (setId) => {
-        buySet(setId); 
-        navigate('/cart');        
+        buySet(setId);
+        navigate('/cart');
     };
 
     const handleTrySet = (setId) => {
-        selectSet(setId); 
+        selectSet(setId);
         navigate("/ar/lips");
     };
 
     return (
         <div className="app">
-            {/* Header */}
             <div className="px-4 py-3 border-b w-full">
-                <h1 className="text-lg font-medium text-center">Мои наборы</h1>
+                <h1 className="text-lg font-medium text-center">{t("My sets")}</h1>
             </div>
 
             <div className="profile-content w-full mb-28 px-4 py-6">
@@ -47,10 +48,9 @@ const ProfileView = () => {
                                 className="border border-gray-200 rounded-lg p-4"
                             >
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-lg font-medium">Набор: {set.id}</h3>
+                                    <h3 className="text-lg font-medium">{t("Set: ")}{set.id}</h3>
                                 </div>
 
-                                {/* Set Products */}
                                 <ul className="space-y-2">
                                     {set.products.map((setProduct, index) => {
                                         const fullProduct = products.find(
@@ -74,11 +74,11 @@ const ProfileView = () => {
                                                                 {fullProduct.name}
                                                             </h4>
                                                             <p className="text-sm text-gray-600">
-                                                                <strong>Цена:</strong> {fullProduct.price.toFixed(2)}₽
+                                                                <strong>{t("Price: ")}</strong> {fullProduct.price.toFixed(2)}₽
                                                             </p>
 
                                                             <div className="flex gap-2 text-sm text-gray-600">
-                                                                <strong>Цвет:</strong>
+                                                                <strong>{t("Color: ")}</strong>
                                                                 <div
                                                                     key={index}
                                                                     className="color-circle"
@@ -89,7 +89,7 @@ const ProfileView = () => {
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <p className="text-gray-400">Продукт не найден</p>
+                                                    <p className="text-gray-400">{t("Product not found")}</p>
                                                 )}
                                             </li>
                                         );
@@ -100,19 +100,19 @@ const ProfileView = () => {
                                         onClick={() => handleShareSet(set.id)}
                                         className="bg-[#f468a4] hover:bg-pink-400 text-white rounded-full px-3 py-1"
                                     >
-                                        Поделиться
+                                        {t("Share")}
                                     </button>
                                     <button
                                         onClick={() => handleTrySet(set.id)}
                                         className="bg-[#f468a4] hover:bg-pink-400 text-white rounded-full px-3 py-1"
                                     >
-                                        Примерить
+                                        {t("Try on")}
                                     </button>
                                     <button
                                         onClick={() => handleBuySet(set.id)}
                                         className="bg-[#f468a4] hover:bg-pink-400 text-white rounded-full px-3 py-1"
                                     >
-                                        Купить
+                                        {t("Buy")}
                                     </button>
                                     <button
                                         onClick={() => handleRemoveSet(set.id)}
@@ -120,7 +120,7 @@ const ProfileView = () => {
                                     >
                                         <img
                                             src="/trash.png"
-                                            alt="Удалить"
+                                            alt={t("Delete")}
                                             className="w-4 h-4 object-contain"
                                         />
                                     </button>
@@ -130,12 +130,11 @@ const ProfileView = () => {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center mt-12">
-                        <p className="text-gray-500">У вас пока нет сохранённых наборов.</p>
+                        <p className="text-gray-500">{t("You have no saved sets yet.")}</p>
                     </div>
                 )}
             </div>
 
-            {/* Footer */}
             <Footer />
         </div>
     );

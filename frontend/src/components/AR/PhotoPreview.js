@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Share2, Download, X, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const PhotoPreview = ({ photoData, onClose, onUpload, uploadUrl, isUploading }) => {
     const photoUrl = URL.createObjectURL(photoData);
+    const { t } = useTranslation();
 
     return (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4">
@@ -30,7 +32,7 @@ const PhotoPreview = ({ photoData, onClose, onUpload, uploadUrl, isUploading }) 
                             ) : (
                                 <Share2 className="mr-2 w-5 h-5" />
                             )}
-                            Поделиться
+                            {t("Share")}
                         </button>
                         <button
                             onClick={() => onUpload('save')}
@@ -42,7 +44,7 @@ const PhotoPreview = ({ photoData, onClose, onUpload, uploadUrl, isUploading }) 
                             ) : (
                                 <Download className="mr-2 w-5 h-5" />
                             )}
-                            Сохранить
+                            {t("Save")}
                         </button>
                     </div>
                 </div>

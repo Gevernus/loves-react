@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import ColorPalette from './ColorPalette';
+import { useTranslation } from 'react-i18next';
 
 Modal.setAppElement('#root'); // Required for accessibility
 
 const ProductInfoPopup = ({ isOpen, onClose, product }) => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState(0);
     if (!product) return null; // Prevent rendering if no product data is passed
     const tabs = [
         {
             id: 0,
-            label: 'Описание',
+            label: t('Description'),
             content: product.description || null,
         },
         {
             id: 1,
-            label: 'Состав',
+            label: t('Contains'),
             content: product.contains || null,
         },
         {
             id: 2,
-            label: 'Применение',
+            label: t('Using'),
             content: product.using || null,
         },
     ];
@@ -79,7 +81,7 @@ const ProductInfoPopup = ({ isOpen, onClose, product }) => {
                     {tabs[activeTab].content ? (
                         tabs[activeTab].content
                     ) : (
-                        <h4>Описание скоро будет готово</h4>
+                        <h4>{t("Description will be ready soon")}</h4>
                     )}
                 </div>
             </div>

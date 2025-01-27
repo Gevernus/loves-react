@@ -20,6 +20,8 @@ import PaymentView from './components/Payment/PaymentView';
 import ProfileView from "./components/Profile/ProfileView";
 import BonusesView from "./components/Profile/BonusesView";
 import { useNavigate } from "react-router-dom";
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 import WebApp from '@twa-dev/sdk';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -111,19 +113,21 @@ const AppContent = () => {
 const App = () => {
   return (
     <Router>
-      <UserProvider>
-        <BanubaProvider>
-          <ProductProvider>
-            <CartProvider>
-              <SetProvider>
-                <UploadProvider>
-                  <AppContent />
-                </UploadProvider>                
-              </SetProvider>
-            </CartProvider>
-          </ProductProvider>
-        </BanubaProvider>
-      </UserProvider>
+      <I18nextProvider i18n={i18n}>
+        <UserProvider>
+          <BanubaProvider>
+            <ProductProvider>
+              <CartProvider>
+                <SetProvider>
+                  <UploadProvider>
+                    <AppContent />
+                  </UploadProvider>
+                </SetProvider>
+              </CartProvider>
+            </ProductProvider>
+          </BanubaProvider>
+        </UserProvider>
+      </I18nextProvider>
     </Router>
   );
 };

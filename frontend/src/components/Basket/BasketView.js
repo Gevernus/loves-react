@@ -30,8 +30,6 @@ const BasketView = () => {
 
     const handleRecipientRedirect = (event) => {
         event.preventDefault(); // Предотвращение стандартного поведения
-        // Отправка данных формы
-        console.log(formData);
         navigate('/recipient');
     };
 

@@ -11,7 +11,6 @@ const ProductInfo = ({ product }) => {
     };
 
     const closePopup = () => {
-        console.log("Trying to close");
         setIsPopupOpen(false);
     };
 

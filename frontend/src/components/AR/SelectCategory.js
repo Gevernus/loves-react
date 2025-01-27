@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const SelectCategory = ({ handleCategoryChange, selectedCategory }) => {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const categories = [
-        { value: 'lips', label: 'Губы', imgSrc: '/lips-icon.png' },
-        { value: 'brows', label: 'Брови', imgSrc: '/brows-icon.png' },
-        { value: 'care', label: 'Уход', imgSrc: '/care-icon.png' },
-        { value: 'blushes', label: 'Румяна', imgSrc: '/blushes-icon.png' },
-        { value: 'eyeshadow', label: 'Тени', imgSrc: '/eyeshadow-icon.png' },
-        { value: 'lashes', label: 'Ресницы', imgSrc: '/lashes-icon.png' },
-        { value: 'eyeliner', label: 'Подводки', imgSrc: '/eyeliner-icon.png' },
-        { value: 'hair', label: 'Волосы', imgSrc: '/hair-icon.png' },
+        { value: 'lips', label: t('Lips'), imgSrc: '/lips-icon.png' },
+        { value: 'brows', label: t('Brows'), imgSrc: '/brows-icon.png' },
+        { value: 'care', label: t('Care'), imgSrc: '/care-icon.png' },
+        { value: 'blushes', label: t('Blushes'), imgSrc: '/blushes-icon.png' },
+        { value: 'eyeshadow', label: t('Eyeshadow'), imgSrc: '/eyeshadow-icon.png' },
+        { value: 'lashes', label: t('Lashes'), imgSrc: '/lashes-icon.png' },
+        { value: 'eyeliner', label: t('Eyeliner'), imgSrc: '/eyeliner-icon.png' },
+        { value: 'hair', label: t('Hair'), imgSrc: '/hair-icon.png' },
     ];
 
     const toggleDropdown = () => {
