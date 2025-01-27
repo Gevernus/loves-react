@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import { useCart } from '../../context/CartContext';
 import ProductInfoPopup from "./ProductInfoPopup";
+import { useTranslation } from 'react-i18next';
 
 const ProductInfo = ({ product }) => {
+    const { t } = useTranslation();
     const { addToCart } = useCart();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -27,12 +29,12 @@ const ProductInfo = ({ product }) => {
             />
             <div className="product-details" >
                 <div className="product-title" onClick={openPopup}>{product.name}</div>
-                <img
-                    className="recipe-button"
-                    src="/buy.png"
-                    alt="Buy button"
+                <button
+                    className="bg-white text-sm text-pink_с max-w-24 w-full border border-pink_с rounded-lg px-1 py-1"
                     onClick={() => handleAddToCart(product)}
-                />
+                >
+                    {t("Buy")}
+                </button>
             </div>
             <ProductInfoPopup
                 isOpen={isPopupOpen}

@@ -258,10 +258,6 @@ footer .active {
   flex-grow: 1;
 }
 
-.recipe-button {
-  height: 35px;
-}
-
 .product {
   display: flex;
   align-items: center;

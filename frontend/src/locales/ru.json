@@ -69,5 +69,8 @@
     "Try on": "Примерить",
     "Buy": "Купить",
     "Delete": "Удалить",
-    "You have no saved sets yet.": "У вас пока нет сохранённых наборов."
+    "You have no saved sets yet.": "У вас пока нет сохранённых наборов.",
+    "The basket is still empty": "В корзине пока пусто :(",
+    "Go to the catalog to find and add the product to the cart": "Перейдите в каталог, чтобы найти и добавить товар в корзину.",
+    "Be the best version of yourself": "Будь лучшей версией себя"
 }

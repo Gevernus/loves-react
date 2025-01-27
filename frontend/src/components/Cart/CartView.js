@@ -71,20 +71,23 @@ const CartView = () => {
                 <div className="px-4 py-3 border-b w-full">
                     <h1 className="text-lg font-medium text-center">{t("My cart")}</h1>
                 </div>
-                <div className="flex flex-col items-center justify-center flex-1 px-4 py-6 mt-12">
-                    <img
-                        src="/empty-cart.png"
-                        alt="Empty Cart"
-                        className="object-contain mb-4"
-                    />
-
+                <div className=' px-4'>
+                    <div className='flex flex-col flex-auto justify-center items-center h-[65vh]'>
+                        <img
+                            src="/empty-cart.png"
+                            alt="Empty Cart"
+                            className="object-contain mb-4"
+                        />
+                        <p className='font-medium text-2xl text-center text-blue_с'>{t("The basket is still empty")}</p>
+                        <p className='font-normal text-base text-center text-dark_gray'>{t("Go to the catalog to find and add the product to the cart")}</p>
+                    </div>
+                    <button
+                        onClick={handleCatalogRedirect}
+                        className="bg-pink_с text-white rounded-full py-3 mt-4 order-button"
+                    >
+                        {t("Go to catalogue")}
+                    </button>
                 </div>
-                <button
-                    onClick={handleCatalogRedirect}
-                    className="bg-pink_с text-white rounded-full py-3 mt-4 order-button"
-                >
-                    {t("Go to catalogue")}
-                </button>
                 <Footer />
             </div>
         );
