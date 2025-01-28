@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+
 /* img {
   height: auto;
   max-width: 430px;
@@ -170,6 +181,7 @@ footer .active {
 }
 
 .container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -338,9 +350,8 @@ footer .active {
 
 .dropdown-list {
   position: absolute;
-  z-index: 10000;
+  z-index: 20;
   background: white;
-  padding-right: 10px;
   padding-bottom: 10px;
 }
 
@@ -439,6 +450,10 @@ footer .active {
   font-weight: 500;
 }
 
+.profile-content {
+  max-width: 430px;
+}
+
 /* ========== Media ============= */
 @media (max-width: 431px) {
   .ar-content {
@@ -450,6 +465,10 @@ footer .active {
   }
 
   .content {
+    max-width: 100%;
+  }
+
+  .profile-content {
     max-width: 100%;
   }
 

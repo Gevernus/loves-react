@@ -37,7 +37,7 @@ const OnboardingScreen = () => {
             />
             <div className="background-image">
                 <div className="overlay">
-                    <h2>{t("What are you interested in?")}</h2>
+                    <h2 className='text-2xl text-left mb-2.5'>{t("What are you interested in?")}</h2>
                     <div className="checkbox-group">
                         <label>
                             <input

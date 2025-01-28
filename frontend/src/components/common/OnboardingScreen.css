@@ -31,11 +31,11 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-h2 {
+/* h2 {
     font-size: 24px;
     text-align: left;
     margin-bottom: 10px;
-}
+} */
 
 .checkbox-group {
     display: flex;

@@ -3,13 +3,16 @@ import { initReactI18next } from 'react-i18next';
 
 import enTranslations from './locales/en.json';
 import ruTranslations from './locales/ru.json';
+import arTranslations from './locales/ar.json';
 
 i18n
     .use(initReactI18next)
     .init({
         resources: {
             en: { translation: enTranslations },
-            ru: { translation: ruTranslations }
+            ru: { translation: ruTranslations },
+            ar: { translation: arTranslations }
+
         },
         lng: localStorage.getItem('i18nextLng') || 'ru',
         fallbackLng: 'en', // fallback language

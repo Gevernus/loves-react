@@ -44,11 +44,11 @@ const SelectCategory = ({ handleCategoryChange, selectedCategory }) => {
                     {filteredCategories.map((category) => (
                         <div
                             key={category.value}
-                            className={`dropdown-item cursor-pointer ${selectedCategory === category.value ? 'active' : ''}`}
+                            className={`dropdown-item cursor-pointer flex ${selectedCategory === category.value ? 'active' : ''}`}
                             onClick={() => handleItemClick(category.value)}
                         >
-                            <img className="inline-block mr-1.5" src={category.imgSrc} alt={category.label} />
-                            {category.label}
+                            <img src={category.imgSrc} alt={category.label} />
+                            <p className='mx-1.5'>{category.label}</p>                          
                         </div>
                     ))}
                 </div>

@@ -22,6 +22,7 @@ import BonusesView from "./components/Profile/BonusesView";
 import { useNavigate } from "react-router-dom";
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
+import { useTranslation } from 'react-i18next';
 import WebApp from '@twa-dev/sdk';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -90,6 +91,13 @@ const AppContent = () => {
 
     handleStartParam();
   }, [isBanubaReady]);
+
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    console.log('Current language:', i18n.language);
+    document.documentElement.lang = i18n.language;
+    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  }, [i18n.language]);
 
   // Show loading screen until both services are ready
   if (isUserLoading || !isBanubaReady || isProductLoading) {
