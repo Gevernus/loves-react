@@ -20,23 +20,24 @@ const ProductInfo = ({ product }) => {
         addToCart(item);
     };
     return (
-        <div className="product-info">
+        <div className="product-info px-3.5">
             <img
-                className="product-image"
+                className="object-cover w-24 h-28 rounded-lg"
                 src={product.image}
                 alt={product.name}
                 onClick={openPopup}
             />
-            <div className="pr-3.5">
+
+            <div className="">
                 <div onClick={openPopup}>
-                    <div className="text-blue_с text-sm font-semibold" >
+                    <div className="text-blue_с text-sm font-semibold">
                         {product.name}
                     </div>
-                    <div className="text-grey text-sm font-normal" >
+                    <div className="text-grey text-sm font-normal">
                         {product.short_description}
                     </div>
                 </div>
-                <div className='flex justify-between items-center mt-8'>
+                <div className="flex justify-between items-center mt-6">
                     <p className="text-blue_с text-base font-semibold">
                         {product.price}₽
                     </p>
