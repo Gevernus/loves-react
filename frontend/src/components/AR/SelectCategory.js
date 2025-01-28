@@ -32,7 +32,7 @@ const SelectCategory = ({ handleCategoryChange, selectedCategory }) => {
             {/* The button to open/close the list */}
             <div className="" onClick={toggleDropdown}>
                 <div className="dropdown-item cursor-pointer mb-1.5">
-                    <img className="inline-block" src={categories.find(category => category.value === selectedCategory)?.imgSrc} alt={selectedCategory} />
+                    <img className="inline-block w-6 h-6" src={categories.find(category => category.value === selectedCategory)?.imgSrc} alt={selectedCategory} />
                     <span className='ml-1.5 mr-2.5'>{categories.find(category => category.value === selectedCategory)?.label}</span>
                     <img id="1" className="inline-block dropdown-arrow" src="/arrow.png" alt="menu" />
                 </div>
@@ -47,7 +47,7 @@ const SelectCategory = ({ handleCategoryChange, selectedCategory }) => {
                             className={`dropdown-item cursor-pointer flex ${selectedCategory === category.value ? 'active' : ''}`}
                             onClick={() => handleItemClick(category.value)}
                         >
-                            <img src={category.imgSrc} alt={category.label} />
+                            <img className='w-6 h-6' src={category.imgSrc} alt={category.label} />
                             <p className='mx-1.5'>{category.label}</p>                          
                         </div>
                     ))}
