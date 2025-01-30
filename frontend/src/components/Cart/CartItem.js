@@ -23,7 +23,7 @@ const CartItem = ({ item }) => {
                     </div>
                     <button
                         onClick={() => removeFromCart(item.name)}
-                        className="text-gray-400"
+                        className="text-gray-400 shrink-0"
                     >
                         <img
                             src="/trash.png"

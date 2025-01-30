@@ -28,7 +28,7 @@ const ProductInfo = ({ product }) => {
                 onClick={openPopup}
             />
 
-            <div className="">
+            <div className="w-full">
                 <div onClick={openPopup}>
                     <div className="text-blue_с text-sm font-semibold">
                         {product.name}

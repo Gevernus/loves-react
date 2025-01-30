@@ -11,6 +11,9 @@ import {
     NumberInput,
     ArrayInput,
     SimpleFormIterator,
+    FileInput,
+    FileField,
+    ImageField,
 } from 'react-admin';
 import ProductBulkActionButtons from './ProductBulkActionButtons';
 
@@ -24,7 +27,7 @@ export const ProductList = () => (
             <NumberField source="price" />
             <TextField source="category" />
             <TextField source="short_description" />
-            <TextField source="image" />
+            <ImageField source="image" title="Product Image" />
             <EditButton />
         </Datagrid>
     </List>
@@ -40,7 +43,10 @@ export const ProductEdit = () => (
             <TextInput source="description" multiline rows={4} />
             <TextInput source="contains" multiline rows={3} />
             <TextInput source="using" multiline rows={3} />
-            <TextInput source="image" />
+            <FileInput source="imageFile" label="Изображение" accept="image/*">
+                <FileField source="src" title="title" />
+            </FileInput>
+            <TextInput source="image" disabled />
             <ArrayInput source="colors">
                 <SimpleFormIterator>
                     <TextInput />
@@ -60,7 +66,10 @@ export const ProductCreate = () => (
             <TextInput source="description" multiline rows={4} />
             <TextInput source="contains" multiline rows={3} />
             <TextInput source="using" multiline rows={3} />
-            <TextInput source="image" />
+            <FileInput source="imageFile" label="Изображение" accept="image/*"> 
+                <FileField source="src" title="title" />
+            </FileInput>
+            <TextInput source="image" disabled />
             <ArrayInput source="colors">
                 <SimpleFormIterator>
                     <TextInput />

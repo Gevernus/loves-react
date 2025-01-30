@@ -4,6 +4,12 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const crypto = require('crypto');
 
+const path = require("path");
+const fs = require("fs");
+const multer = require("multer");
+const chokidar = require("chokidar");
+const uploadsPath = "/usr/src/app/uploads"; //Folder with downloadable files. Путь к volume (в Docker-контейнере)
+
 const app = express();
 app.use(cors({
     exposedHeaders: ['Content-Range']
@@ -15,6 +21,28 @@ const mongoUri = process.env.MONGO_URI || "mongodb://admin:GevPass12@mongo:27017
 // Подключение к MongoDB
 mongoose.connect(mongoUri, {
 });
+
+//Удаление изображения из Volume
+const deleteImage = (imageUrl) => {
+    if (!imageUrl) return;
+
+    // Получаем имя файла из URL (http://localhost:8000/uploads/filename.png -> filename.png)
+    const filename = imageUrl.split("/uploads/")[1];
+    if (!filename) return;
+
+    const filePath = path.join(uploadsPath, filename); // Формируем полный путь
+
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (!err) {
+            fs.unlink(filePath, (err) => {
+                if (err) console.error(`❌ Ошибка удаления файла ${filePath}:`, err);
+                else console.log(`Файл удалён: ${filePath}`);
+            });
+        } else {
+            console.log(`🚨 Файл не найден: ${filePath}, возможно, уже удалён.`);
+        }
+    });
+};
 
 // Модель для товаров
 const productSchema = new mongoose.Schema({
@@ -590,14 +618,59 @@ app.post("/api/admin/products", async (req, res) => {
 });
 
 app.put("/api/admin/products/:id", async (req, res) => {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(product);
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: "Продукт не найден" });
+        }
+
+        const oldImage = product.image; // Сохраненное изображение
+        const newImage = req.body.image; // Новое изображение (если есть в запросе)
+
+        // Проверяем, изменилось ли изображение (оно должно существовать и быть другим)
+        if (newImage && oldImage && newImage !== oldImage) {
+            deleteImage(oldImage);
+        }
+
+        // Обновляем только переданные поля, не трогаем `image`, если его нет в `req.body`
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body }, // Обновляем только переданные поля
+            { new: true, runValidators: true }
+        );
+
+        res.json(updatedProduct);
+    } catch (error) {
+        console.error("Ошибка обновления продукта:", error);
+        res.status(500).json({ error: "Ошибка обновления продукта" });
+    }
 });
 
+
+
+
 app.delete("/api/admin/products/:id", async (req, res) => {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ id: req.params.id });
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: "Продукт не найден" });
+        }
+
+        // Удаляем изображение из volume
+        if (product.image) {
+            deleteImage(product.image);
+        }
+
+        await Product.findByIdAndDelete(req.params.id);
+        res.json({ id: req.params.id, message: "Продукт удален" });
+
+    } catch (error) {
+        console.error("Ошибка удаления продукта:", error);
+        res.status(500).json({ error: "Ошибка удаления продукта" });
+    }
 });
+
+
 
 // Users endpoints
 const handleAdminRoute = (Model, resourceName) => async (req, res) => {
@@ -907,3 +980,81 @@ app.get('/api/orders/:orderId/status', async (req, res) => {
         });
     }
 });
+
+
+// Distribution of static files======================================
+
+console.log(`Раздача файлов из: ${uploadsPath}`);
+
+// Проверяем файлы при старте сервера
+fs.readdir(uploadsPath, (err, files) => {
+    if (err) console.error("🚨 Ошибка чтения папки uploads при запуске:", err);
+    else console.log("Файлы в uploads при старте сервера:", files);
+});
+
+// Middleware для логирования запросов к файлам
+app.use((req, res, next) => {
+    if (req.url.startsWith("/uploads")) {
+        console.log(`Запрос к файлу: ${req.url}`);
+        fs.readdir(uploadsPath, (err, files) => {
+            if (err) console.error("🚨 Ошибка чтения uploads:", err);
+            else console.log("Текущие файлы в uploads:", files);
+        });
+    }
+    next();
+});
+
+
+// Динамическое обновление маршрута при добавлении новых файлов
+const watcher = chokidar.watch(uploadsPath, { persistent: true });
+
+watcher.on("add", (filePath) => {
+    console.log(`Добавлен новый файл: ${filePath}`);
+    
+    // Обновляем маршрут для раздачи файлов
+    app._router.stack = app._router.stack.filter(layer => layer.route?.path !== "/uploads");
+    app.use("/uploads", express.static(uploadsPath));
+});
+
+// Ручная проверка наличия файла перед раздачей
+app.get("/uploads/:filename", (req, res) => {
+    const filePath = path.join(uploadsPath, req.params.filename);
+    
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.log(`🚨 Файл не найден: ${filePath}`);
+            return res.status(404).send("Файл не найден");
+        }
+        console.log(`Отдаю файл: ${filePath}`);
+        res.sendFile(filePath);
+    });
+});
+
+// Настройка `multer` для загрузки файлов
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadsPath); // Файлы сохраняются в папку uploads (volume)
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        const extension = path.extname(file.originalname);
+        cb(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
+    },
+});
+
+const upload = multer({ storage });
+
+//  Эндпоинт загрузки изображения
+app.post("/api/upload", upload.single("imageFile"), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "Файл не загружен" });
+    }
+
+    const fileUrl = `/uploads/${req.file.filename}`;
+    console.log(`✅ Файл загружен: ${req.file.filename}, доступен по URL: ${fileUrl}`);
+    
+    res.json({ url: fileUrl });
+});
+
+// 📂 Раздаем файлы
+app.use("/uploads", express.static(uploadsPath));

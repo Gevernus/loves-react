@@ -94,16 +94,26 @@ services:
       - "8000:8000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`touch-the-beauty-ai.shop`) && (PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
+
+      # A new route for distribution `/uploads`
+      - "traefik.http.routers.uploads.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.uploads.entrypoints=websecure"
+      - "traefik.http.routers.uploads.tls.certresolver=myresolver"
+      - "traefik.http.services.uploads.loadbalancer.server.port=8000"
+
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin
       - CLOUDINARY_CLOUD_NAME=dm31xhpot
       - CLOUDINARY_API_KEY=559895215387326
       - CLOUDINARY_API_SECRET=IwddD8Bf5Jwdj_ohf_HXNMy9klo
+    volumes:     
+      # - ./backend/uploads:/usr/src/app/uploads
+      - uploads_data:/usr/src/app/uploads # Named volume for storing images
     networks:
       - web
     restart: unless-stopped
@@ -112,4 +122,5 @@ networks:
   web:
 volumes:
   mongodb_data:
-  node_modules_volume:  
+  node_modules_volume:
+  uploads_data: # Creating a volume to store uploaded files  

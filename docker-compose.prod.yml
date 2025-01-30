@@ -97,6 +97,13 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
+
+      # Adding a route for distribution `/uploads`
+      - "traefik.http.routers.uploads.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.uploads.entrypoints=websecure"
+      - "traefik.http.routers.uploads.tls.certresolver=myresolver"
+      - "traefik.http.services.uploads.loadbalancer.server.port=8000"
+
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin
@@ -104,6 +111,7 @@ services:
       - CLOUDINARY_API_KEY=559895215387326
       - CLOUDINARY_API_SECRET=IwddD8Bf5Jwdj_ohf_HXNMy9klo
     volumes:
+      - uploads_data:/usr/src/app/uploads  # We use volume for images
       - /etc/ssl/certs:/etc/ssl/certs:ro
     restart: unless-stopped
     networks:
@@ -126,3 +134,4 @@ networks:
     driver: bridge
 volumes:
   mongodb_data:
+  uploads_data:  # Adding a volume for images
