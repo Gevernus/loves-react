@@ -99,12 +99,6 @@ services:
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
 
-      # A new route for distribution `/uploads`
-      - "traefik.http.routers.uploads.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/uploads`)"
-      - "traefik.http.routers.uploads.entrypoints=websecure"
-      - "traefik.http.routers.uploads.tls.certresolver=myresolver"
-      - "traefik.http.services.uploads.loadbalancer.server.port=8000"
-
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin

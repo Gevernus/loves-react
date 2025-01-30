@@ -2,8 +2,8 @@ import { fetchUtils } from "react-admin";
 import simpleRestProvider from "ra-data-simple-rest";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:8000/api/admin";
-const uploadUrl = "http://localhost:8000/api/upload"; // Эндпоинт загрузки файлов
-const baseUrl = "http://localhost:8000"; // Базовый URL для формирования полного пути
+const baseUrl = new URL(apiUrl).origin; // Формируем правильный `baseUrl`, убирая `/api/admin`
+const uploadUrl = `${apiUrl}/upload`; // http://localhost:8000/api/admin/upload
 
 const httpClient = (url, options = {}) => {
     if (!options.headers) {
@@ -12,23 +12,34 @@ const httpClient = (url, options = {}) => {
     return fetchUtils.fetchJson(url, options);
 };
 
-// Функция загрузки файла (отправка в `multer`)
+// Функция загрузки файла через `multer`
 const uploadFile = async (file) => {
     const formData = new FormData();
-    formData.append("imageFile", file.rawFile); // `rawFile` - это сам загруженный файл
+    formData.append("imageFile", file.rawFile); // `rawFile` - сам загруженный файл
 
-    const response = await fetch(uploadUrl, {
-        method: "POST",
-        body: formData,
-    });
+    try {
+        const response = await fetch(uploadUrl, {
+            method: "POST",
+            body: formData,
+            headers: { Accept: "application/json" }, // Добавляем Accept
+        });
 
-    if (!response.ok) {
-        throw new Error("Ошибка загрузки файла");
+        if (!response.ok) {
+            throw new Error("Ошибка загрузки файла");
+        }
+
+        const result = await response.json();
+        
+        // Проверяем, является ли `result.url` полным URL
+        const fullUrl = result.url.startsWith("http") ? result.url : `${baseUrl}${result.url}`;
+        
+        return fullUrl; // Возвращаем правильный URL
+    } catch (error) {
+        console.error("Ошибка при загрузке файла:", error);
+        throw error;
     }
-
-    const result = await response.json();
-    return `${baseUrl}${result.url}`; // Генерируем полный URL
 };
+
 
 // Обёртка над `simpleRestProvider`, добавляющая загрузку изображений
 const customDataProvider = {
@@ -42,8 +53,8 @@ const customDataProvider = {
             imageUrl = await uploadFile(params.data.imageFile); // Загружаем новый файл
         }
 
-        const newData = { ...params.data, image: imageUrl }; // Сохраняем путь в БД
-        delete newData.imageFile; // Убираем `imageFile`, оно не нужно в БД
+        const newData = { ...params.data, image: imageUrl }; // Обновляем путь в БД
+        delete newData.imageFile; // `imageFile` не нужно в БД
 
         return httpClient(`${apiUrl}/${resource}`, {
             method: "POST",

@@ -7,7 +7,6 @@ const crypto = require('crypto');
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
-const chokidar = require("chokidar");
 const uploadsPath = "/usr/src/app/uploads"; //Folder with downloadable files. Путь к volume (в Docker-контейнере)
 
 const app = express();
@@ -1004,32 +1003,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
-// Динамическое обновление маршрута при добавлении новых файлов
-const watcher = chokidar.watch(uploadsPath, { persistent: true });
-
-watcher.on("add", (filePath) => {
-    console.log(`Добавлен новый файл: ${filePath}`);
-    
-    // Обновляем маршрут для раздачи файлов
-    app._router.stack = app._router.stack.filter(layer => layer.route?.path !== "/uploads");
-    app.use("/uploads", express.static(uploadsPath));
-});
-
-// Ручная проверка наличия файла перед раздачей
-app.get("/uploads/:filename", (req, res) => {
-    const filePath = path.join(uploadsPath, req.params.filename);
-    
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            console.log(`🚨 Файл не найден: ${filePath}`);
-            return res.status(404).send("Файл не найден");
-        }
-        console.log(`Отдаю файл: ${filePath}`);
-        res.sendFile(filePath);
-    });
-});
-
 // Настройка `multer` для загрузки файлов
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -1045,16 +1018,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //  Эндпоинт загрузки изображения
-app.post("/api/upload", upload.single("imageFile"), (req, res) => {
+app.post("/api/admin/upload", upload.single("imageFile"), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: "Файл не загружен" });
     }
 
-    const fileUrl = `/uploads/${req.file.filename}`;
+    // Формируем полный путь, используя базовый URL
+    const baseUrl = process.env.BASE_URL || "http://localhost:8000"; 
+    const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+
     console.log(`✅ Файл загружен: ${req.file.filename}, доступен по URL: ${fileUrl}`);
     
     res.json({ url: fileUrl });
 });
+
 
 // 📂 Раздаем файлы
 app.use("/uploads", express.static(uploadsPath));
